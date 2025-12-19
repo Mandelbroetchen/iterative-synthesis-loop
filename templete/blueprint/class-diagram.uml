@@ -1,0 +1,61 @@
+@startuml FreefallClassDiagram
+
+class Apple {
+  -mass: float
+  -position: Vector2D
+  -velocity: Vector2D
+  -radius: float
+  +updatePosition(time: float): void
+  +getPosition(): Vector2D
+  +getVelocity(): Vector2D
+}
+
+class Environment {
+  -gravity: float
+  -airResistance: float
+  -wind: Vector2D
+  +getGravity(): float
+  +applyAirResistance(velocity: Vector2D): Vector2D
+}
+
+class PhysicsEngine {
+  -apple: Apple
+  -environment: Environment
+  +calculateTrajectory(timeStep: float): Trajectory
+  +updatePhysics(timeStep: float): void
+}
+
+class Trajectory {
+  -points: List<Vector2D>
+  -times: List<float>
+  +addPoint(position: Vector2D, time: float): void
+  +getPoints(): List<Vector2D>
+  +getTimes(): List<float>
+}
+
+class SimulationController {
+  -physicsEngine: PhysicsEngine
+  -trajectory: Trajectory
+  -isRunning: boolean
+  +startSimulation(): void
+  +pauseSimulation(): void
+  +resetSimulation(): void
+  +update(timeStep: float): void
+}
+
+class Vector2D {
+  +x: float
+  +y: float
+  +add(v: Vector2D): Vector2D
+  +subtract(v: Vector2D): Vector2D
+  +multiply(scalar: float): Vector2D
+}
+
+PhysicsEngine "1" *-- "1" Apple
+PhysicsEngine "1" *-- "1" Environment
+SimulationController "1" *-- "1" PhysicsEngine
+SimulationController "1" *-- "1" Trajectory
+Apple "1" --> "1" Vector2D
+Environment "1" --> "1" Vector2D
+
+@enduml

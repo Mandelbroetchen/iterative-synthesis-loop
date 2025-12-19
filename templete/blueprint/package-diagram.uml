@@ -1,0 +1,37 @@
+@startuml FreefallPackageDiagram
+
+package "Freefall Simulation" {
+  package "core" {
+    [PhysicsEngine]
+    [SimulationController]
+  }
+
+  package "ui" {
+    [MainWindow]
+    [VisualizationPanel]
+    [ControlPanel]
+  }
+
+  package "models" {
+    [Apple]
+    [Environment]
+    [Trajectory]
+  }
+
+  package "utils" {
+    [DataExporter]
+    [MathUtils]
+  }
+}
+
+[PhysicsEngine] --> [Apple]
+[PhysicsEngine] --> [Environment]
+[SimulationController] --> [PhysicsEngine]
+[SimulationController] --> [Trajectory]
+[MainWindow] --> [VisualizationPanel]
+[MainWindow] --> [ControlPanel]
+[ControlPanel] --> [SimulationController]
+[VisualizationPanel] --> [Trajectory]
+[DataExporter] --> [Trajectory]
+
+@enduml

@@ -1,0 +1,22 @@
+{
+  "model": {
+    "model": "mistral-large-latest"
+  },
+  "request": {
+    "url": "https://api.mistral.ai/v1/chat/completions",
+    "method": "POST",
+    "headers": {
+      "Content-Type": "application/json"
+    },
+    "query_params": {},
+    "body": {},
+    "timeout_ms": 30000
+  },
+  "metadata": {
+    "provider": "mistral",
+    "retry": {
+      "enabled": true,
+      "max_attempts": 3
+    }
+  }
+}

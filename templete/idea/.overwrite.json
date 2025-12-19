@@ -1,0 +1,17 @@
+[
+    {
+        "path":"prompt/document.md"
+    },
+    {
+        "path":"prompt/usecase-diagram.uml"
+    },
+    {
+        "path":"prompt/class-diagram.uml"
+    },
+    {
+        "path":"prompt/package-diagram.uml"
+    },
+    {
+        "path":"prompt/write.json"
+    }
+]

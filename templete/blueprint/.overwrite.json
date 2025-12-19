@@ -1,0 +1,29 @@
+{
+  "files": [
+    {
+      "path": "src/core/PhysicsEngine.py",
+      "description": "Core physics calculations for the freefall simulation",
+      "content": "class PhysicsEngine:\n    def __init__(self, apple, environment):\n        self.apple = apple\n        self.environment = environment\n        \n    def calculate_trajectory(self, time_step):\n        # Implementation of trajectory calculation\n        pass\n        \n    def update_physics(self, time_step):\n        # Update apple's position and velocity\n        pass"
+    },
+    {
+      "path": "src/models/Apple.py",
+      "description": "Apple model representing the falling object",
+      "content": "class Apple:\n    def __init__(self, mass=0.1, position=(0, 0), velocity=(0, 0), radius=0.05):\n        self.mass = mass\n        self.position = position\n        self.velocity = velocity\n        self.radius = radius\n        \n    def update_position(self, time):\n        # Update position based on kinematic equations\n        pass"
+    },
+    {
+      "path": "src/models/Environment.py",
+      "description": "Environment parameters affecting the simulation",
+      "content": "class Environment:\n    def __init__(self, gravity=9.81, air_resistance=0.1, wind=(0, 0)):\n        self.gravity = gravity\n        self.air_resistance = air_resistance\n        self.wind = wind"
+    },
+    {
+      "path": "src/utils/Vector2D.py",
+      "description": "2D vector operations for physics calculations",
+      "content": "class Vector2D:\n    def __init__(self, x=0, y=0):\n        self.x = x\n        self.y = y\n        \n    def add(self, v):\n        return Vector2D(self.x + v.x, self.y + v.y)\n        \n    def subtract(self, v):\n        return Vector2D(self.x - v.x, self.y - v.y)\n        \n    def multiply(self, scalar):\n        return Vector2D(self.x * scalar, self.y * scalar)"
+    },
+    {
+      "path": "main.py",
+      "description": "Main entry point for the simulation",
+      "content": "from src.core.PhysicsEngine import PhysicsEngine\nfrom src.models.Apple import Apple\nfrom src.models.Environment import Environment\n\ndef main():\n    apple = Apple()\n    environment = Environment()\n    engine = PhysicsEngine(apple, environment)\n    \n    # Simulation loop would go here\n    \nif __name__ == \"__main__\":\n    main()"
+    }
+  ]
+}
