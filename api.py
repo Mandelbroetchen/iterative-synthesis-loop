@@ -3,6 +3,7 @@
 import os
 import json
 import time
+from openai import OpenAI
 import requests
 from dotenv import load_dotenv
 from md import load_md
@@ -16,7 +17,7 @@ class MistralAPI:
     def __init__(self, config):
         load_dotenv()
 
-        self.api_key = os.getenv("API_KEY")
+        self.api_key = os.getenv("API_KEY_MISTRAL")
         if not self.api_key:
             raise RuntimeError("API_KEY missing in .env")
 
@@ -65,7 +66,24 @@ class MistralAPI:
     def test(self, prompt):
         result = self.send_request(prompt)
         return result["choices"][0]["message"]["content"]
-    
+
+class OpenAIAPI:
+    def __init__(self):
+        self.api_key = os.getenv("API_KEY_OPENAI")
+        self.client = OpenAI(api_key = self.api_key,
+      base_url = "https://litellm.s.studiumdigitale.uni-frankfurt.de/v1"
+    )
+
+
+    def get_response(self, text):
+        response = self.client.chat.completions.create(
+          model = "qwen2.5-coder-32b-instruct",
+          messages = [
+            {"role": "user", "content": text}
+          ]
+        )
+        return response
+
 if __name__ == "__main__":
     config = load_config("idea/.api.json")
     api = MistralAPI(config)

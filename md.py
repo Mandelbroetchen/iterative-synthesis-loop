@@ -15,11 +15,11 @@ def load_md(path: str) -> str:
             with open(src, "r", encoding="utf-8") as f:
                 return f.read()
         except FileNotFoundError:
-            return "empty"
+            return ""
 
     return INSERT_RE.sub(replace, content)
 
 
 if __name__ == "__main__":
-    prompt = load_md("idea/.prompt.design.md")
+    prompt = load_md("idea/.prompt.md")
     print(prompt)
