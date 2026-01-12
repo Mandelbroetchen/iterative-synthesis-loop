@@ -1,12 +1,13 @@
 import re
+import sys
 
 INSERT_RE = re.compile(
     r'<insert\s+src="([^"]+)">\s*</insert>',
     re.IGNORECASE
 )
 
-def load_md(path: str) -> str:
-    with open(path, "r", encoding="utf-8") as f:
+def load_md(path: str, name: str) -> str:
+    with open(path + "/" + name, "r", encoding="utf-8") as f:
         content = f.read()
 
     def replace(match):
@@ -21,5 +22,9 @@ def load_md(path: str) -> str:
 
 
 if __name__ == "__main__":
-    prompt = load_md("idea/.prompt.md")
-    print(prompt)
+    in_path = sys.argv[1]
+    name = sys.argv[2]
+    out_path = sys.argv[3]
+    prompt = load_md(in_path, name)
+    with open(out_path, "w", encoding="utf-8") as f:
+        f.write(prompt)

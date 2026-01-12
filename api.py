@@ -6,7 +6,6 @@ import time
 from openai import OpenAI
 import requests
 from dotenv import load_dotenv
-from md import load_md
 
 def load_config(path: str):
     with open(path, "r", encoding="utf-8") as f:
@@ -87,7 +86,5 @@ class OpenAIAPI:
 if __name__ == "__main__":
     config = load_config("idea/.api.json")
     api = MistralAPI(config)
-
-    prompt = load_md("idea/.prompt.md")
-    response = api.test(prompt)
+    response = api.test("Hello, world!")
     print("Response:", response)
