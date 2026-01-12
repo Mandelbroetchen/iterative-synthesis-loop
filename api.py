@@ -30,10 +30,12 @@ class MistralAPI:
         }
 
         self.model = config["model"]["model"]
+        self.max_tokens = config["request"]["max_tokens"]
 
     def send_request(self, text: str):
         payload = {
             "model": self.model,
+            "max_tokens": self.max_tokens,
             "messages": [
                 {
                     "role": "user",
@@ -62,6 +64,7 @@ class MistralAPI:
                     raise RuntimeError("Request failed after retries") from e
 
                 time.sleep(2 ** attempt)
+
     def test(self, prompt):
         result = self.send_request(prompt)
         return result["choices"][0]["message"]["content"]
@@ -84,7 +87,7 @@ class OpenAIAPI:
         return response
 
 if __name__ == "__main__":
-    config = load_config("idea/.api.json")
+    config = load_config(".api.json")
     api = MistralAPI(config)
     response = api.test("Hello, world!")
     print("Response:", response)

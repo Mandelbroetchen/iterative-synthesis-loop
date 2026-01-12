@@ -8,6 +8,7 @@
     "headers": {
       "Content-Type": "application/json"
     },
+    "max_tokens": 2048,
     "query_params": {},
     "body": {},
     "timeout_ms": 30000

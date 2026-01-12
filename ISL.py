@@ -6,9 +6,9 @@ import logging
 
 if __name__ == "__main__":
     logging.basicConfig(
-        filename='.log.md',        # The file to write to
-        filemode='a',              # 'a' to append (default), 'w' to overwrite
-        format='# %(asctime)s \n %(message)s \n',
+        filename='.log.md',
+        filemode='w',
+        format='---\n ```%(asctime)s``` \n %(message)s \n',
         level=logging.INFO
     )
 
