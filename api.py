@@ -1,93 +1,97 @@
-# api.py
-
 import os
+import sys
 import json
-import time
-from openai import OpenAI
-import requests
 from dotenv import load_dotenv
-
-def load_config(path: str):
-    with open(path, "r", encoding="utf-8") as f:
-        return json.load(f)
+import requests
 
 
-class MistralAPI:
-    def __init__(self, config):
-        load_dotenv()
+class API:
+    def __init__(self, config: dict):
+        self.config = config
 
-        self.api_key = os.getenv("API_KEY_MISTRAL")
+        self.url = config["url"]
+        self.method = config.get("method", "POST").upper()
+        self.timeout = config.get("timeout", 30)
+
+        # API key from environment
+        env_name = config.get("api_key_env", "API_KEY")
+        self.api_key = os.getenv(env_name)
+
         if not self.api_key:
-            raise RuntimeError("API_KEY missing in .env")
+            raise RuntimeError(f"Missing environment variable: {env_name}")
 
-        self.url = config["request"]["url"]
-        self.timeout = config["request"]["timeout_ms"] / 1000
-        self.retries = config["metadata"]["retry"]["max_attempts"]
+        # Copy headers so config isn't mutated
+        self.headers = dict(config.get("headers", {}))
+        self.headers["Authorization"] = f"Bearer {self.api_key}"
 
-        self.headers = {
-            "Authorization": f"Bearer {self.api_key}",
-            "Content-Type": "application/json"
-        }
+        # Base payload (model, temperature, etc)
+        self.base_payload = dict(config.get("payload", {}))
 
-        self.model = config["model"]["model"]
-        self.max_tokens = config["request"]["max_tokens"]
+        # Optional system prompt
+        self.system_prompt = config.get("system")
 
-    def send_request(self, text: str):
-        payload = {
-            "model": self.model,
-            "max_tokens": self.max_tokens,
-            "messages": [
-                {
-                    "role": "user",
-                    "content": text
-                }
-            ]
-        }
+    def get_response(self, prompt: str):
+        payload = dict(self.base_payload)
 
-        for attempt in range(1, self.retries + 1):
-            try:
-                r = requests.post(
-                    self.url,
-                    headers=self.headers,
-                    json=payload,
-                    timeout=self.timeout
-                )
-                r.raise_for_status()
-                return r.json()
+        messages = []
 
-            except requests.RequestException as e:
-                if r is not None:
-                    print("Status:", r.status_code)
-                    print("Body:", r.text)
+        if self.system_prompt:
+            messages.append({
+                "role": "system",
+                "content": self.system_prompt
+            })
 
-                if attempt == self.retries:
-                    raise RuntimeError("Request failed after retries") from e
+        messages.append({
+            "role": "user",
+            "content": prompt
+        })
 
-                time.sleep(2 ** attempt)
+        payload["messages"] = messages
 
-    def test(self, prompt):
-        result = self.send_request(prompt)
-        return result["choices"][0]["message"]["content"]
+        try:
+            response = requests.request(
+                method=self.method,
+                url=self.url,
+                headers=self.headers,
+                json=payload,
+                timeout=self.timeout,
+            )
+            response.raise_for_status()
 
-class OpenAIAPI:
-    def __init__(self):
-        self.api_key = os.getenv("API_KEY_OPENAI")
-        self.client = OpenAI(api_key = self.api_key,
-      base_url = "https://litellm.s.studiumdigitale.uni-frankfurt.de/v1"
-    )
+        except requests.RequestException as e:
+            raise RuntimeError(f"API request failed: {e}")
+
+        data = response.json()
+
+        # OpenAI-compatible
+        if "choices" in data:
+            return data["choices"][0]["message"]["content"]
+
+        return data
+
+    def __repr__(self):
+        return f"<API {self.method} {self.url}>"
 
 
-    def get_response(self, text):
-        response = self.client.chat.completions.create(
-          model = "qwen2.5-coder-32b-instruct",
-          messages = [
-            {"role": "user", "content": text}
-          ]
-        )
-        return response
+def main():
+    if len(sys.argv) < 3:
+        print("Usage:")
+        print("  python api.py config.json \"your prompt\"")
+        sys.exit(1)
+
+    config_path = sys.argv[1]
+    prompt = sys.argv[2]
+
+    with open(config_path, "r", encoding="utf-8") as f:
+        config = json.load(f)
+
+    api = API(config)
+
+    response = api.get_response(prompt)
+
+    print(response)
+
 
 if __name__ == "__main__":
-    config = load_config(".api.json")
-    api = MistralAPI(config)
-    response = api.test("Hello, world!")
-    print("Response:", response)
+    load_dotenv()
+    main()
