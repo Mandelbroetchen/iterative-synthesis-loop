@@ -6,8 +6,8 @@ INSERT_RE = re.compile(
     re.IGNORECASE
 )
 
-def load_md(path: str, name: str) -> str:
-    with open(path + "/" + name, "r", encoding="utf-8") as f:
+def load_md(path, name):
+    with open(path / name, "r", encoding="utf-8") as f:
         content = f.read()
 
     def replace(match):

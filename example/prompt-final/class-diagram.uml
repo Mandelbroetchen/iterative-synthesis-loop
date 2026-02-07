@@ -5,57 +5,257 @@ class Apple {
   -position: Vector2D
   -velocity: Vector2D
   -radius: float
-  +updatePosition(time: float): void
-  +getPosition(): Vector2D
-  +getVelocity(): Vector2D
+  -drag_coefficient: float
+  -cross_sectional_area: float
+  -bounce_coefficient: float
+  +Apple(mass: float, radius: float, drag_coeff: float, bounce_coeff: float)
+  +update_position(time_step: float, environment: Environment): void
+  +get_position(): Vector2D
+  +get_velocity(): Vector2D
+  +get_mass(): float
+  +get_radius(): float
+  +get_drag_properties(): tuple
+  +get_kinetic_energy(): float
+  +get_potential_energy(ground_level: float): float
+  +apply_force(force: Vector2D): void
+  +set_velocity(velocity: Vector2D): void
+  +set_position(position: Vector2D): void
+  +get_bounce_coefficient(): float
 }
 
 class Environment {
   -gravity: float
-  -airResistance: float
+  -air_density: float
   -wind: Vector2D
-  +getGravity(): float
-  +applyAirResistance(velocity: Vector2D): Vector2D
+  -ground_level: float
+  -air_resistance_enabled: bool
+  +Environment(gravity: float, air_density: float, ground_level: float, air_resistance: bool)
+  +get_gravity(): float
+  +get_air_density(): float
+  +get_wind(): Vector2D
+  +get_ground_level(): float
+  +is_air_resistance_enabled(): bool
+  +apply_air_resistance(velocity: Vector2D, apple: Apple): Vector2D
+  +check_collision(position: Vector2D): boolean
+  +set_gravity(gravity: float): void
+  +set_air_density(density: float): void
+  +set_wind(wind: Vector2D): void
+  +set_ground_level(level: float): void
+  +set_air_resistance(enabled: bool): void
 }
 
 class PhysicsEngine {
   -apple: Apple
   -environment: Environment
-  +calculateTrajectory(timeStep: float): Trajectory
-  +updatePhysics(timeStep: float): void
+  -integration_method: IntegrationMethod
+  -trajectory: Trajectory
+  -current_time: float
+  +PhysicsEngine(apple: Apple, environment: Environment)
+  +set_integration_method(method: IntegrationMethod): void
+  +calculate_trajectory(time_step: float): Trajectory
+  +update_physics(time_step: float): void
+  +calculate_energy(): EnergyValues
+  +handle_collision(): void
+  +reset(): void
+  +get_trajectory(): Trajectory
+  +get_current_time(): float
+  +_euler_integration(net_force: Vector2D, time_step: float): void
+  +_verlet_integration(net_force: Vector2D, time_step: float): void
+  +_runge_kutta_integration(net_force: Vector2D, time_step: float): void
 }
 
 class Trajectory {
-  -points: List<Vector2D>
-  -times: List<float>
-  +addPoint(position: Vector2D, time: float): void
-  +getPoints(): List<Vector2D>
-  +getTimes(): List<float>
+  -points: List[Vector2D]
+  -times: List[float]
+  -velocities: List[Vector2D]
+  -accelerations: List[Vector2D]
+  -energies: List[EnergyValues]
+  +add_point(position: Vector2D, time: float, velocity: Vector2D, acceleration: Vector2D, energy: EnergyValues): void
+  +get_points(): List[Vector2D]
+  +get_times(): List[float]
+  +get_velocities(): List[Vector2D]
+  +get_accelerations(): List[Vector2D]
+  +get_energies(): List[EnergyValues]
+  +get_time_of_flight(): float
+  +get_max_height(): float
+  +get_impact_velocity(): float
+  +get_point_count(): int
+  +clear(): void
 }
 
 class SimulationController {
-  -physicsEngine: PhysicsEngine
+  -physics_engine: PhysicsEngine
   -trajectory: Trajectory
-  -isRunning: boolean
-  +startSimulation(): void
-  +pauseSimulation(): void
-  +resetSimulation(): void
-  +update(timeStep: float): void
+  -is_running: boolean
+  -current_time: float
+  -time_step: float
+  -simulation_speed: float
+  +SimulationController(physics_engine: PhysicsEngine, time_step: float)
+  +start_simulation(): void
+  +pause_simulation(): void
+  +reset_simulation(): void
+  +update(): void
+  +get_simulation_state(): SimulationState
+  +set_time_step(time_step: float): void
+  +set_simulation_speed(speed: float): void
+  +get_current_time(): float
+  +get_trajectory(): Trajectory
+  +is_running(): boolean
 }
 
 class Vector2D {
   +x: float
   +y: float
+  +Vector2D(x: float, y: float)
   +add(v: Vector2D): Vector2D
   +subtract(v: Vector2D): Vector2D
   +multiply(scalar: float): Vector2D
+  +magnitude(): float
+  +normalize(): Vector2D
+  +dot_product(v: Vector2D): float
+  +copy(): Vector2D
+  +to_tuple(): tuple
+  +static from_tuple(t: tuple): Vector2D
+}
+
+class EnergyValues {
+  +kinetic: float
+  +potential: float
+  +total: float
+  +EnergyValues(kinetic: float, potential: float)
+  +update_total(): void
+  +to_dict(): dict
+  +static from_dict(d: dict): EnergyValues
+}
+
+enum IntegrationMethod {
+  EULER
+  VERLET
+  RUNGE_KUTTA
+}
+
+enum SimulationState {
+  READY
+  RUNNING
+  PAUSED
+  FINISHED
+}
+
+class SimulationConfig {
+  +initial_height: float
+  +initial_velocity: float
+  +gravity: float
+  +time_step: float
+  +air_resistance: bool
+  +air_density: float
+  +apple_mass: float
+  +apple_radius: float
+  +drag_coefficient: float
+  +bounce_coefficient: float
+  +integration_method: IntegrationMethod
+  +simulation_speed: float
+  +ground_level: float
+  +SimulationConfig()
+  +validate(): boolean
+  +to_dict(): dict
+  +static from_dict(d: dict): SimulationConfig
+}
+
+class PhysicsValidator {
+  +static validate_energy_conservation(trajectory: Trajectory, tolerance: float): boolean
+  +static validate_trajectory(trajectory: Trajectory, config: SimulationConfig): boolean
+  +static calculate_error(trajectory: Trajectory, analytical_solution: callable): float
+  +static check_collision_consistency(trajectory: Trajectory, ground_level: float): boolean
+}
+
+class DataExporter {
+  +static export_to_csv(trajectory: Trajectory, filename: str, precision: int): void
+  +static export_to_json(trajectory: Trajectory, filename: str, indent: int): void
+  +static export_simulation_state(controller: SimulationController, filename: str): void
 }
 
 PhysicsEngine "1" *-- "1" Apple
 PhysicsEngine "1" *-- "1" Environment
+PhysicsEngine "1" --> "1" IntegrationMethod
+PhysicsEngine "1" *-- "1" Trajectory
 SimulationController "1" *-- "1" PhysicsEngine
-SimulationController "1" *-- "1" Trajectory
+SimulationController "1" --> "1" SimulationState
 Apple "1" --> "1" Vector2D
 Environment "1" --> "1" Vector2D
+Trajectory "1" --> "*" Vector2D
+Trajectory "1" --> "*" EnergyValues
+SimulationConfig "1" --> "1" IntegrationMethod
+PhysicsValidator "1" --> "1" Trajectory
+DataExporter "1" --> "1" Trajectory
+
+note top of Apple
+  Represents the physical apple
+  with mass, position, velocity,
+  and drag properties. Handles
+  position updates based on forces.
+end note
+
+note right of Environment
+  Represents the simulation
+  environment including gravity,
+  air resistance, and ground level.
+  Calculates forces acting on the apple.
+end note
+
+note bottom of PhysicsEngine
+  Core physics calculations using
+  selected integration method.
+  Manages trajectory recording and
+  collision handling.
+end note
+
+note left of Trajectory
+  Records complete history of
+  the apple's motion including
+  position, velocity, acceleration,
+  and energy at each time step.
+end note
+
+note right of SimulationController
+  Manages simulation execution,
+  time progression, and state.
+  Coordinates between physics
+  engine and other components.
+end note
+
+note top of Vector2D
+  2D vector implementation for
+  position, velocity, and force
+  calculations. Provides vector
+  operations and utilities.
+end note
+
+note right of EnergyValues
+  Stores kinetic, potential, and
+  total mechanical energy at
+  a point in time. Used for
+  energy conservation analysis.
+end note
+
+note bottom of SimulationConfig
+  Configuration parameters for
+  the simulation including initial
+  conditions, physics settings,
+  and numerical methods.
+end note
+
+note left of PhysicsValidator
+  Utility class for validating
+  simulation results against
+  theoretical predictions and
+  conservation laws.
+end note
+
+note right of DataExporter
+  Handles data export in various
+  formats (CSV, JSON) for
+  external analysis and
+  visualization.
+end note
 
 @enduml
