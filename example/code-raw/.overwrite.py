@@ -248,6 +248,39 @@ def collect_parameters() -> dict:
 
     return params
 """,
+    "code-final/main.py": """\"\"\"
+Main Application Module
+=======================
+
+Entry point for the freefall simulation application.
+\"\"\"
+
+from input_handler import collect_parameters
+from freefall_simulator import FreefallSimulator
+from output_formatter import display_results
+
+def main():
+    \"\"\"Main application entry point.\"\"\"
+    try:
+        # Collect input parameters
+        params = collect_parameters()
+
+        # Initialize and run simulation
+        simulator = FreefallSimulator(**params)
+        result = simulator.run_simulation()
+
+        # Display results
+        display_results(result)
+
+    except ValueError as ve:
+        print(f\"Input error: {ve}\")
+    except Exception as e:
+        print(f\"An unexpected error occurred: {e}\")
+        print(\"Please try again with valid inputs.\")
+
+if __name__ == \"__main__\":
+    main()
+""",
     "code-final/output_formatter.py": """\"\"\"
 Output Formatting Module
 ========================
@@ -281,39 +314,6 @@ def display_results(result: SimulationResult):
     print(f\"- Acceleration: {final_acc:.2f} m/s²\")
 
     print(\"\\nSimulation complete.\")
-""",
-    "code-final/main.py": """\"\"\"
-Main Application Module
-=======================
-
-Entry point for the freefall simulation application.
-\"\"\"
-
-from input_handler import collect_parameters
-from freefall_simulator import FreefallSimulator
-from output_formatter import display_results
-
-def main():
-    \"\"\"Main application entry point.\"\"\"
-    try:
-        # Collect input parameters
-        params = collect_parameters()
-
-        # Initialize and run simulation
-        simulator = FreefallSimulator(**params)
-        result = simulator.run_simulation()
-
-        # Display results
-        display_results(result)
-
-    except ValueError as ve:
-        print(f\"Input error: {ve}\")
-    except Exception as e:
-        print(f\"An unexpected error occurred: {e}\")
-        print(\"Please try again with valid inputs.\")
-
-if __name__ == \"__main__":
-    main()
 """,
     "code-final/tests/test_freefall_simulator.py": """\"\"\"
 Unit tests for the Freefall Simulator module.
@@ -437,9 +437,53 @@ class TestInputValidator(unittest.TestCase):
         self.assertFalse(InputValidator.validate_all(10.0, 0.0, 0.1, 0.0, 9.81))
         self.assertFalse(InputValidator.validate_all(10.0, 0.0, 0.1, 2.0, -9.81))
 
-if __name__ == \"__main__":
+if __name__ == \"__main__\":
     unittest.main()
 """,
+    "code-final/.patchnote.md": """# Patch Notes for Freefall Simulation Code
+
+## Changes Made
+
+### 1. Freefall Simulator Module (`freefall_simulator.py`)
+- Added `get_final_values()` method to `SimulationResult` class to retrieve final position, velocity, and acceleration
+- Improved ground collision detection to include an additional step after impact for better visualization
+- Updated docstrings for better clarity and completeness
+- Changed warning message from "apple" to "object" for broader applicability
+- Added `math` import (though not currently used, available for future extensions)
+
+### 2. Input Handler Module (`input_handler.py`)
+- Added default values for time step (0.1s) and total duration (10.0s)
+- Improved handling of empty input for default values by using `strip()`
+- Enhanced user prompts to clearly indicate default values
+
+### 3. Output Formatter Module (`output_formatter.py`)
+- Added display of final values (position, velocity, acceleration) after the results table
+- Improved formatting of output for better readability
+
+### 4. Test Module (`tests/test_freefall_simulator.py`)
+- Added comprehensive unit tests for all major components
+- Tests cover initialization, calculation methods, collision detection, and simulation execution
+- Tests for both successful and edge case scenarios
+- Added tests for the `InputValidator` class
+
+### 5. General Improvements
+- Consistent type hints throughout all modules
+- Improved error handling and validation
+- Better code organization and documentation
+- More robust simulation termination logic
+- Added floating-point precision handling in simulation loop
+
+## Bug Fixes
+- Fixed issue where simulation would not show the exact impact moment
+- Fixed potential division by zero in time step calculation in summary
+- Improved handling of empty result sets in `get_final_values()`
+
+## Quality Improvements
+- Added comprehensive test coverage
+- Improved code documentation
+- Better user experience with default values and clearer prompts
+- More informative output formatting
+"""
 }
 
 for path, content in files.items():
