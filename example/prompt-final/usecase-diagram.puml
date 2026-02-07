@@ -8,13 +8,17 @@ rectangle FreefallSimulation {
   usecase (Input Parameters) as UC1
   usecase (Run Simulation) as UC2
   usecase (View Results) as UC3
+  usecase (Set Gravitational Acceleration) as UC4
+  usecase (Detect Ground Collision) as UC5
 }
 
 User --> UC1
 User --> UC2
 User --> UC3
+User --> UC4
 
 UC1 .> UC2 : includes
 UC2 .> UC3 : includes
+UC2 .> UC5 : includes
 
 @enduml

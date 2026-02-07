@@ -1,0 +1,47 @@
+@startuml class-diagram
+
+class FreefallSimulator {
+  -h0: float
+  -v0: float
+  -dt: float
+  -T: float
+  -g: float
+  +__init__(h0: float, v0: float, dt: float, T: float, g: float = 9.81)
+  +validate_inputs(): bool
+  +calculate_position(t: float): float
+  +calculate_velocity(t: float): float
+  +run_simulation(): SimulationResult
+  -detect_ground_collision(t: float, h: float): bool
+}
+
+class SimulationResult {
+  +time: list[float]
+  +position: list[float]
+  +velocity: list[float]
+  +acceleration: list[float]
+  +impact_time: float | None
+  +completed: bool
+  +__init__(time: list, position: list, velocity: list, acceleration: list, impact_time: float | None)
+  +display(): str
+  +get_summary(): str
+}
+
+class InputValidator {
+  +validate_height(h0: float): bool
+  +validate_velocity(v0: float): bool
+  +validate_time_step(dt: float): bool
+  +validate_duration(T: float): bool
+  +validate_gravity(g: float): bool
+  +validate_all(h0: float, v0: float, dt: float, T: float, g: float): bool
+}
+
+class WarningGenerator {
+  +ground_collision_warning(impact_time: float): str
+  +early_termination_warning(): str
+}
+
+FreefallSimulator --> SimulationResult : produces >
+FreefallSimulator --> InputValidator : uses >
+FreefallSimulator --> WarningGenerator : uses >
+
+@enduml

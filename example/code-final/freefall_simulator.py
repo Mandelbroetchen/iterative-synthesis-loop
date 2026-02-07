@@ -6,7 +6,8 @@ This module implements the physics calculations and simulation logic for freefal
 under constant gravitational acceleration.
 """
 
-from typing import List, Optional
+from typing import List, Optional, Tuple
+import math
 
 class SimulationResult:
     """Container for simulation results at each time step."""
@@ -54,6 +55,12 @@ class SimulationResult:
             summary.append(f"- Ground collision at: {self.impact_time:.2f} s")
         return "\n".join(summary)
 
+    def get_final_values(self) -> Tuple[float, float, float]:
+        """Get the final position, velocity, and acceleration values."""
+        if not self.time:
+            return (0.0, 0.0, 0.0)
+        return (self.position[-1], self.velocity[-1], self.acceleration[-1])
+
 class InputValidator:
     """Handles validation of input parameters for the simulation."""
 
@@ -97,7 +104,7 @@ class WarningGenerator:
     @staticmethod
     def ground_collision_warning(impact_time: float) -> str:
         """Generate warning for ground collision."""
-        return f"Warning: Simulation stopped early - apple hit the ground at t ≈ {impact_time:.2f} s"
+        return f"Warning: Simulation stopped early - object hit the ground at t ≈ {impact_time:.2f} s"
 
     @staticmethod
     def early_termination_warning() -> str:
@@ -162,6 +169,15 @@ class FreefallSimulator:
 
             if self.detect_ground_collision(current_time, h) and impact_time is None:
                 impact_time = current_time
+                # Add one more step to show the impact
+                if current_time + self.dt <= self.T + 1e-9:
+                    current_time += self.dt
+                    h = self.calculate_position(current_time)
+                    v = self.calculate_velocity(current_time)
+                    time_points.append(current_time)
+                    position_values.append(h)
+                    velocity_values.append(v)
+                    acceleration_values.append(self.g)
                 break
 
             current_time += self.dt

@@ -1,0 +1,31 @@
+@startuml package-diagram
+
+package "Freefall Simulation" {
+  package "Input" {
+    [Parameter Collector]
+    [Input Validator]
+  }
+
+  package "Physics" {
+    [Freefall Calculator]
+    [Ground Detector]
+  }
+
+  package "Simulation" {
+    [Simulation Controller]
+  }
+
+  package "Output" {
+    [Result Formatter]
+    [Warning Generator]
+  }
+}
+
+[Parameter Collector] --> [Input Validator]
+[Input Validator] --> [Simulation Controller]
+[Simulation Controller] --> [Freefall Calculator]
+[Freefall Calculator] --> [Ground Detector]
+[Simulation Controller] --> [Result Formatter]
+[Ground Detector] --> [Warning Generator]
+
+@enduml

@@ -25,7 +25,7 @@ def get_float_input(prompt: str, min_val: float = None, max_val: float = None) -
     while True:
         try:
             value = input(prompt)
-            if value == "" and "default" in prompt.lower():
+            if value.strip() == "" and "default" in prompt.lower():
                 return None
             value = float(value)
             if min_val is not None and value < min_val:
@@ -51,8 +51,8 @@ def collect_parameters() -> dict:
     params = {
         'h0': get_float_input("Initial height (m): ", min_val=0),
         'v0': get_float_input("Initial velocity (m/s): "),
-        'dt': get_float_input("Time step (s): ", min_val=0.001, max_val=10),
-        'T': get_float_input("Total duration (s): ", min_val=0.001, max_val=3600),
+        'dt': get_float_input("Time step (s) [default=0.1]: ", min_val=0.001, max_val=10) or 0.1,
+        'T': get_float_input("Total duration (s) [default=10.0]: ", min_val=0.001, max_val=3600) or 10.0,
         'g': get_float_input("Gravitational acceleration (m/s²) [default=9.81]: ", min_val=0) or 9.81
     }
 
