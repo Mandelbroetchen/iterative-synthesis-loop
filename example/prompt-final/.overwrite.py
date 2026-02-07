@@ -1,296 +1,428 @@
 from pathlib import Path
 
 files = {
-    "code-raw/freefall_simulator.py": """\"\"\"
-Freefall Simulation Module
-==========================
-
-This module implements the physics calculations and simulation logic for freefall motion
-under constant gravitational acceleration.
-\"\"\"
-
-from typing import List, Optional
-
-class SimulationResult:
-    \"\"\"Container for simulation results at each time step.\"\"\"
-
-    def __init__(self, time: List[float], position: List[float], velocity: List[float],
-                 acceleration: List[float], impact_time: Optional[float] = None):
-        \"\"\"
-        Initialize simulation results.
-
-        Args:
-            time: List of time values
-            position: List of position values
-            velocity: List of velocity values
-            acceleration: List of acceleration values
-            impact_time: Time when ground collision occurred (None if no collision)
-        \"\"\"
-        self.time = time
-        self.position = position
-        self.velocity = velocity
-        self.acceleration = acceleration
-        self.impact_time = impact_time
-        self.completed = impact_time is None
-
-    def display(self) -> str:
-        \"\"\"Format simulation results as a table string.\"\"\"
-        header = "Time (s) | Position (m) | Velocity (m/s) | Acceleration (m/s²)"
-        separator = "-" * len(header)
-        rows = []
-        for t, h, v, a in zip(self.time, self.position, self.velocity, self.acceleration):
-            if h <= 0 and len(rows) > 0:
-                break
-            rows.append(f"{t:8.2f} | {max(h, 0.0):12.2f} | {v:14.2f} | {a:18.2f}")
-        return "\\n".join([header, separator] + rows)
-
-    def get_summary(self) -> str:
-        \"\"\"Get a summary of simulation parameters and results.\"\"\"
-        summary = [
-            "Simulation Parameters:",
-            f"- Initial height: {self.position[0] if self.position else 0:.2f} m",
-            f"- Initial velocity: {self.velocity[0] if self.velocity else 0:.2f} m/s",
-            f"- Time step: {self.time[1] - self.time[0] if len(self.time) > 1 else 0:.2f} s",
-            f"- Gravitational acceleration: {self.acceleration[0] if self.acceleration else 0:.2f} m/s²"
-        ]
-        if self.impact_time is not None:
-            summary.append(f"- Ground collision at: {self.impact_time:.2f} s")
-        return "\\n".join(summary)
-
-class InputValidator:
-    \"\"\"Handles validation of input parameters for the simulation.\"\"\"
-
-    @staticmethod
-    def validate_height(h0: float) -> bool:
-        \"\"\"Validate initial height.\"\"\"
-        return h0 >= 0
-
-    @staticmethod
-    def validate_velocity(v0: float) -> bool:
-        \"\"\"Validate initial velocity.\"\"\"
-        return True  # Velocity can be any real number
-
-    @staticmethod
-    def validate_time_step(dt: float) -> bool:
-        \"\"\"Validate time step.\"\"\"
-        return dt > 0
-
-    @staticmethod
-    def validate_duration(T: float) -> bool:
-        \"\"\"Validate total duration.\"\"\"
-        return T > 0
-
-    @staticmethod
-    def validate_gravity(g: float) -> bool:
-        \"\"\"Validate gravitational acceleration.\"\"\"
-        return g >= 0
-
-    @staticmethod
-    def validate_all(h0: float, v0: float, dt: float, T: float, g: float) -> bool:
-        \"\"\"Validate all input parameters.\"\"\"
-        return (InputValidator.validate_height(h0) and
-                InputValidator.validate_velocity(v0) and
-                InputValidator.validate_time_step(dt) and
-                InputValidator.validate_duration(T) and
-                InputValidator.validate_gravity(g))
-
-class WarningGenerator:
-    \"\"\"Generates warning messages for simulation events.\"\"\"
-
-    @staticmethod
-    def ground_collision_warning(impact_time: float) -> str:
-        \"\"\"Generate warning for ground collision.\"\"\"
-        return f"Warning: Simulation stopped early - apple hit the ground at t ≈ {impact_time:.2f} s"
-
-    @staticmethod
-    def early_termination_warning() -> str:
-        \"\"\"Generate warning for early termination.\"\"\"
-        return "Warning: Simulation terminated early due to ground collision"
-
-class FreefallSimulator:
-    \"\"\"Core physics engine for freefall simulation.\"\"\"
-
-    def __init__(self, h0: float, v0: float, dt: float, T: float, g: float = 9.81):
-        \"\"\"
-        Initialize the freefall simulator with initial conditions.
-
-        Args:
-            h0: Initial height (meters)
-            v0: Initial velocity (meters/second)
-            dt: Time step (seconds)
-            T: Total simulation duration (seconds)
-            g: Gravitational acceleration (meters/second²), default 9.81
-
-        Raises:
-            ValueError: If input parameters are invalid
-        \"\"\"
-        if not InputValidator.validate_all(h0, v0, dt, T, g):
-            raise ValueError("Invalid input parameters")
-
-        self.h0 = h0
-        self.v0 = v0
-        self.dt = dt
-        self.T = T
-        self.g = g
-
-    def calculate_position(self, t: float) -> float:
-        \"\"\"Calculate position at time t using kinematic equation.\"\"\"
-        return self.h0 + self.v0 * t + 0.5 * self.g * t ** 2
-
-    def calculate_velocity(self, t: float) -> float:
-        \"\"\"Calculate velocity at time t using kinematic equation.\"\"\"
-        return self.v0 + self.g * t
-
-    def detect_ground_collision(self, t: float, h: float) -> bool:
-        \"\"\"Check if ground collision has occurred.\"\"\"
-        return h <= 0
-
-    def run_simulation(self) -> SimulationResult:
-        \"\"\"Run the simulation and return results at each time step.\"\"\"
-        time_points = []
-        position_values = []
-        velocity_values = []
-        acceleration_values = []
-        impact_time = None
-
-        current_time = 0.0
-        while current_time <= self.T + 1e-9:  # Account for floating point precision
-            h = self.calculate_position(current_time)
-            v = self.calculate_velocity(current_time)
-
-            time_points.append(current_time)
-            position_values.append(h)
-            velocity_values.append(v)
-            acceleration_values.append(self.g)
-
-            if self.detect_ground_collision(current_time, h) and impact_time is None:
-                impact_time = current_time
-                break
-
-            current_time += self.dt
-
-        return SimulationResult(time_points, position_values, velocity_values,
-                              acceleration_values, impact_time)
+    "code-raw/__init__.py": """# Apple Freefall Simulation Package
+# Main package initialization file
 """,
-    "code-raw/input_handler.py": """\"\"\"
-Input Handling Module
-=====================
-
-This module handles user input collection and validation for the freefall simulation.
-\"\"\"
-
-from freefall_simulator import InputValidator
-
-def get_float_input(prompt: str, min_val: float = None, max_val: float = None) -> float:
-    \"\"\"
-    Get and validate a float input from the user.
-
-    Args:
-        prompt: Input prompt message
-        min_val: Minimum allowed value (inclusive)
-        max_val: Maximum allowed value (inclusive)
-
-    Returns:
-        Validated float value
-
-    Raises:
-        ValueError: If input cannot be converted to float or is out of bounds
-    \"\"\"
-    while True:
-        try:
-            value = input(prompt)
-            if value == "" and "default" in prompt.lower():
-                return None
-            value = float(value)
-            if min_val is not None and value < min_val:
-                print(f"Value must be ≥ {min_val}")
-                continue
-            if max_val is not None and value > max_val:
-                print(f"Value must be ≤ {max_val}")
-                continue
-            return value
-        except ValueError:
-            print("Please enter a valid number")
-
-def collect_parameters() -> dict:
-    \"\"\"
-    Collect all simulation parameters from user input.
-
-    Returns:
-        Dictionary containing all simulation parameters
-    \"\"\"
-    print("Freefall Simulation - Parameter Input")
-    print("------------------------------------")
-
-    params = {
-        'h0': get_float_input("Initial height (m): ", min_val=0),
-        'v0': get_float_input("Initial velocity (m/s): "),
-        'dt': get_float_input("Time step (s): ", min_val=0.001, max_val=10),
-        'T': get_float_input("Total duration (s): ", min_val=0.001, max_val=3600),
-        'g': get_float_input("Gravitational acceleration (m/s²) [default=9.81]: ", min_val=0) or 9.81
-    }
-
-    return params
-""",
-    "code-raw/output_formatter.py": """\"\"\"
-Output Formatting Module
-========================
-
-This module handles the display and formatting of simulation results.
-\"\"\"
-
-from freefall_simulator import SimulationResult, WarningGenerator
-
-def display_results(result: SimulationResult):
-    \"\"\"
-    Display simulation results in a formatted table.
-
-    Args:
-        result: SimulationResult object containing the simulation data
-    \"\"\"
-    print("\\nFreefall Simulation Results")
-    print("=" * 30)
-    print(result.get_summary())
-
-    if result.impact_time is not None:
-        print("\\n" + WarningGenerator.ground_collision_warning(result.impact_time))
-
-    print("\\nResults:")
-    print(result.display())
-    print("\\nSimulation complete.")
-""",
-    "code-raw/main.py": """\"\"\"
-Main Application Module
-=======================
-
-Entry point for the freefall simulation application.
-\"\"\"
-
-from input_handler import collect_parameters
-from freefall_simulator import FreefallSimulator
-from output_formatter import display_results
+    "code-raw/main.py": """import sys
+from apple_freefall.simulation import FreefallSimulation
 
 def main():
-    \"\"\"Main application entry point.\"\"\"
-    try:
-        # Collect input parameters
-        params = collect_parameters()
-
-        # Initialize and run simulation
-        simulator = FreefallSimulator(**params)
-        result = simulator.run_simulation()
-
-        # Display results
-        display_results(result)
-
-    except ValueError as ve:
-        print(f"Input error: {ve}")
-    except Exception as e:
-        print(f"An unexpected error occurred: {e}")
-        print("Please try again with valid inputs.")
+    simulation = FreefallSimulation()
+    simulation.run()
 
 if __name__ == "__main__":
     main()
+""",
+    "code-raw/apple_freefall/__init__.py": """# Apple Freefall Simulation package initialization
+""",
+    "code-raw/apple_freefall/config.py": """import json
+import os
+from typing import Dict, Any
+
+class ConfigManager:
+    \"\"\"Manages configuration for the freefall simulation.\"\"\"
+
+    DEFAULT_CONFIG = {
+        "gravity": 9.81,
+        "time_step": 0.01,
+        "output_precision": 4,
+        "air_density": 1.225,
+        "default_drag_coefficient": 0.47,
+        "default_cross_sectional_area": 0.01
+    }
+
+    def __init__(self, config_path: str = "config.json"):
+        \"\"\"Initialize the configuration manager.
+
+        Args:
+            config_path: Path to the configuration file
+        \"\"\"
+        self.config_path = config_path
+        self.config = self.DEFAULT_CONFIG.copy()
+        self.load_config()
+
+    def load_config(self) -> None:
+        \"\"\"Load configuration from file or create default if not exists.\"\"\"
+        try:
+            if os.path.exists(self.config_path):
+                with open(self.config_path, 'r') as f:
+                    file_config = json.load(f)
+                    self.config.update(file_config)
+        except (json.JSONDecodeError, IOError) as e:
+            print(f"Warning: Could not load config file. Using defaults. Error: {e}")
+
+    def save_config(self) -> None:
+        \"\"\"Save current configuration to file.\"\"\"
+        try:
+            with open(self.config_path, 'w') as f:
+                json.dump(self.config, f, indent=4)
+        except IOError as e:
+            print(f"Warning: Could not save config file. Error: {e}")
+
+    def get(self, key: str, default: Any = None) -> Any:
+        \"\"\"Get a configuration value.
+
+        Args:
+            key: Configuration key
+            default: Default value if key doesn't exist
+
+        Returns:
+            Configuration value or default
+        \"\"\"
+        return self.config.get(key, default)
+
+    def set(self, key: str, value: Any) -> None:
+        \"\"\"Set a configuration value.
+
+        Args:
+            key: Configuration key
+            value: Value to set
+        \"\"\"
+        self.config[key] = value
+""",
+    "code-raw/apple_freefall/input_handler.py": """class InputHandler:
+    \"\"\"Handles user input for the freefall simulation.\"\"\"
+
+    @staticmethod
+    def get_float_input(prompt: str, min_val: float = None, max_val: float = None) -> float:
+        \"\"\"Get a float input from the user with validation.
+
+        Args:
+            prompt: Input prompt message
+            min_val: Minimum allowed value
+            max_val: Maximum allowed value
+
+        Returns:
+            Validated float input
+        \"\"\"
+        while True:
+            try:
+                value = float(input(prompt))
+                if min_val is not None and value < min_val:
+                    print(f"Value must be at least {min_val}")
+                    continue
+                if max_val is not None and value > max_val:
+                    print(f"Value must be at most {max_val}")
+                    continue
+                return value
+            except ValueError:
+                print("Please enter a valid number")
+
+    @staticmethod
+    def get_yes_no_input(prompt: str) -> bool:
+        \"\"\"Get a yes/no input from the user.
+
+        Args:
+            prompt: Input prompt message
+
+        Returns:
+            True for yes, False for no
+        \"\"\"
+        while True:
+            response = input(prompt).strip().lower()
+            if response in ('y', 'yes'):
+                return True
+            elif response in ('n', 'no'):
+                return False
+            else:
+                print("Please enter 'yes' or 'no'")
+
+    def get_simulation_parameters(self) -> dict:
+        \"\"\"Get all simulation parameters from the user.
+
+        Returns:
+            Dictionary containing simulation parameters
+        \"\"\"
+        print("\\nApple Freefall Simulation Parameters")
+        print("-----------------------------------")
+
+        params = {
+            'initial_height': self.get_float_input("Initial height (meters): ", min_val=0.1),
+            'mass': self.get_float_input("Apple mass (kilograms): ", min_val=0.01),
+            'air_resistance': self.get_yes_no_input("Enable air resistance? (yes/no): "),
+            'simulation_time': self.get_float_input("Simulation duration (seconds): ", min_val=0.1)
+        }
+
+        if params['air_resistance']:
+            params['drag_coefficient'] = self.get_float_input(
+                "Drag coefficient (default 0.47): ", min_val=0.01, max_val=2.0
+            )
+            params['cross_sectional_area'] = self.get_float_input(
+                "Cross-sectional area (m², default 0.01): ", min_val=0.0001, max_val=1.0
+            )
+
+        return params
+""",
+    "code-raw/apple_freefall/physics_engine.py": """import math
+from typing import List, Tuple
+
+class PhysicsEngine:
+    \"\"\"Handles physics calculations for the freefall simulation.\"\"\"
+
+    def __init__(self, config):
+        \"\"\"Initialize the physics engine with configuration.
+
+        Args:
+            config: Configuration manager instance
+        \"\"\"
+        self.g = config.get('gravity')
+        self.air_density = config.get('air_density')
+        self.time_step = config.get('time_step')
+
+    def calculate_freefall(self, params: dict) -> List[Tuple[float, float, float]]:
+        \"\"\"Calculate freefall motion with optional air resistance.
+
+        Args:
+            params: Dictionary containing simulation parameters
+
+        Returns:
+            List of tuples (time, position, velocity) at each time step
+        \"\"\"
+        results = []
+        time = 0.0
+        position = params['initial_height']
+        velocity = 0.0
+
+        # Set up air resistance parameters if enabled
+        if params['air_resistance']:
+            drag_coefficient = params.get('drag_coefficient', 0.47)
+            cross_sectional_area = params.get('cross_sectional_area', 0.01)
+        else:
+            drag_coefficient = 0.0
+            cross_sectional_area = 0.0
+
+        while time <= params['simulation_time'] and position >= 0:
+            # Calculate acceleration
+            if params['air_resistance']:
+                air_resistance = 0.5 * self.air_density * drag_coefficient * cross_sectional_area * velocity**2
+                acceleration = self.g - (air_resistance / params['mass'])
+            else:
+                acceleration = self.g
+
+            # Update velocity and position using Euler integration
+            velocity += acceleration * self.time_step
+            position -= velocity * self.time_step
+
+            # Ensure position doesn't go below ground
+            if position < 0:
+                position = 0
+
+            results.append((time, position, velocity))
+            time += self.time_step
+
+        return results
+
+    def get_impact_time(self, results: List[Tuple[float, float, float]]) -> float:
+        \"\"\"Get the time when the apple hits the ground.
+
+        Args:
+            results: Simulation results from calculate_freefall
+
+        Returns:
+            Time of impact or None if not found
+        \"\"\"
+        for time, position, _ in results:
+            if position <= 0:
+                return time
+        return results[-1][0] if results else 0.0
+
+    def get_max_velocity(self, results: List[Tuple[float, float, float]]) -> float:
+        \"\"\"Get the maximum velocity reached during the simulation.
+
+        Args:
+            results: Simulation results from calculate_freefall
+
+        Returns:
+            Maximum velocity
+        \"\"\"
+        return max(velocity for _, _, velocity in results) if results else 0.0
+""",
+    "code-raw/apple_freefall/output_generator.py": """from typing import List, Tuple
+import math
+
+class OutputGenerator:
+    \"\"\"Generates output files and visualizations for the simulation.\"\"\"
+
+    def __init__(self, config):
+        \"\"\"Initialize the output generator with configuration.
+
+        Args:
+            config: Configuration manager instance
+        \"\"\"
+        self.output_precision = config.get('output_precision')
+
+    def generate_markdown(self, params: dict, results: List[Tuple[float, float, float]]) -> str:
+        \"\"\"Generate markdown output for the simulation.
+
+        Args:
+            params: Simulation parameters
+            results: Simulation results
+
+        Returns:
+            Markdown content as string
+        \"\"\"
+        if not results:
+            return "# Simulation Results\\n\\nNo results to display."
+
+        # Get summary statistics
+        impact_time = self._get_impact_time(results)
+        max_velocity = self._get_max_velocity(results)
+
+        # Generate markdown content
+        md_content = "# Apple Freefall Simulation Results\\n\\n"
+
+        # Simulation parameters
+        md_content += "## Simulation Parameters\\n\\n"
+        md_content += f"- Initial height: {params['initial_height']:.2f} m\\n"
+        md_content += f"- Apple mass: {params['mass']:.2f} kg\\n"
+        md_content += f"- Air resistance: {'Enabled' if params['air_resistance'] else 'Disabled'}\\n"
+        if params['air_resistance']:
+            md_content += f"- Drag coefficient: {params.get('drag_coefficient', 0.47)}\\n"
+            md_content += f"- Cross-sectional area: {params.get('cross_sectional_area', 0.01):.4f} m²\\n"
+        md_content += f"- Simulation duration: {params['simulation_time']:.2f} s\\n\\n"
+
+        # Summary statistics
+        md_content += "## Summary Statistics\\n\\n"
+        md_content += f"- Time to impact: {impact_time:.{self.output_precision}f} s\\n"
+        md_content += f"- Maximum velocity: {max_velocity:.{self.output_precision}f} m/s\\n\\n"
+
+        # Results table
+        md_content += "## Detailed Results\\n\\n"
+        md_content += "| Time (s) | Height (m) | Velocity (m/s) |\\n"
+        md_content += "|----------|------------|----------------|\\n"
+
+        # Add every 10th result to keep table manageable
+        for time, position, velocity in results[::10]:
+            md_content += f"| {time:.{self.output_precision}f} | {position:.{self.output_precision}f} | {velocity:.{self.output_precision}f} |\\n"
+
+        # ASCII graph
+        md_content += "\\n## Position vs Time Graph\\n\\n"
+        md_content += "```\\n"
+        md_content += self._generate_ascii_graph(results)
+        md_content += "```\\n"
+
+        return md_content
+
+    def save_to_file(self, content: str, filename: str = "out.md") -> None:
+        \"\"\"Save content to a markdown file.
+
+        Args:
+            content: Content to save
+            filename: Output filename
+        \"\"\"
+        with open(filename, 'w') as f:
+            f.write(content)
+
+    def _get_impact_time(self, results: List[Tuple[float, float, float]]) -> float:
+        \"\"\"Get the time when the apple hits the ground.
+
+        Args:
+            results: Simulation results
+
+        Returns:
+            Time of impact
+        \"\"\"
+        for time, position, _ in results:
+            if position <= 0:
+                return time
+        return results[-1][0] if results else 0.0
+
+    def _get_max_velocity(self, results: List[Tuple[float, float, float]]) -> float:
+        \"\"\"Get the maximum velocity reached during the simulation.
+
+        Args:
+            results: Simulation results
+
+        Returns:
+            Maximum velocity
+        \"\"\"
+        return max(velocity for _, _, velocity in results) if results else 0.0
+
+    def _generate_ascii_graph(self, results: List[Tuple[float, float, float]]) -> str:
+        \"\"\"Generate an ASCII graph of position vs time.
+
+        Args:
+            results: Simulation results
+
+        Returns:
+            ASCII graph as string
+        \"\"\"
+        if not results:
+            return "No data to graph"
+
+        # Find max height for scaling
+        max_height = max(position for _, position, _ in results)
+        if max_height <= 0:
+            return "No valid data to graph"
+
+        # Scale factors
+        height_scale = 20 / max_height
+        time_scale = 50 / results[-1][0]
+
+        # Generate graph
+        graph = ""
+        for time, position, _ in results[::5]:  # Sample every 5th point
+            # Calculate position in graph
+            graph_height = int(position * height_scale)
+            if graph_height < 0:
+                graph_height = 0
+
+            # Create line
+            line = [' '] * 50
+            if graph_height > 0:
+                line_pos = min(int(time * time_scale), 49)
+                line[line_pos] = '*'
+
+            graph += f"{''.join(line)} {position:.1f}m\\n"
+
+        # Add time axis
+        graph += "\\nTime (s):\\n"
+        graph += "0" + " " * 46 + f"{results[-1][0]:.1f}\\n"
+
+        return graph
+""",
+    "code-raw/apple_freefall/simulation.py": """from apple_freefall.config import ConfigManager
+from apple_freefall.input_handler import InputHandler
+from apple_freefall.physics_engine import PhysicsEngine
+from apple_freefall.output_generator import OutputGenerator
+
+class FreefallSimulation:
+    \"\"\"Main simulation class for the apple freefall simulation.\"\"\"
+
+    def __init__(self):
+        \"\"\"Initialize the simulation with all components.\"\"\"
+        self.config = ConfigManager()
+        self.input_handler = InputHandler()
+        self.physics_engine = PhysicsEngine(self.config)
+        self.output_generator = OutputGenerator(self.config)
+
+    def run(self) -> None:
+        \"\"\"Run the complete simulation workflow.\"\"\"
+        try:
+            # Get simulation parameters from user
+            params = self.input_handler.get_simulation_parameters()
+
+            # Run physics simulation
+            results = self.physics_engine.calculate_freefall(params)
+
+            # Generate output
+            md_content = self.output_generator.generate_markdown(params, results)
+            self.output_generator.save_to_file(md_content)
+
+            print("\\nSimulation complete! Results saved to out.md")
+
+        except Exception as e:
+            print(f"An error occurred during simulation: {e}")
+""",
+    "code-raw/config.json": """{
+    "gravity": 9.81,
+    "time_step": 0.01,
+    "output_precision": 4,
+    "air_density": 1.225,
+    "default_drag_coefficient": 0.47,
+    "default_cross_sectional_area": 0.01
+}
 """
 }
 

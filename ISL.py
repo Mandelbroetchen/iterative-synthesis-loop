@@ -27,10 +27,8 @@ def main():
 
     in_path = Path(args.in_path)
 
-    # Config paths: override with CLI if given, else default
     api_config_path = Path(args.api_config) if args.api_config else in_path / ".api.json"
-    loop_config_path = Path(args.loop_config) if args.loop_config else in_path / ".loop.json"
-    prompt_md_path = in_path / ".template-prompt.md"
+
 
     api_config = load_config(api_config_path)
     #oop_config = load_config(loop_config_path)

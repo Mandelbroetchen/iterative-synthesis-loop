@@ -1,0 +1,9 @@
+{
+    "statges": [
+        "prompt-raw",
+        "prompt-final",
+        "prompt-edit-code-raw",
+        "code-raw",
+        "code-final"
+    ]
+}

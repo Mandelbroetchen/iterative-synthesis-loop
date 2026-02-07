@@ -1,31 +1,40 @@
 @startuml package-diagram
 
-package "Freefall Simulation" {
-  package "Input" {
-    [Parameter Collector]
-    [Input Validator]
+package "Apple Freefall Simulation" {
+  package "input" {
+    [UserInputHandler]
+    [InputValidator]
   }
 
-  package "Physics" {
-    [Freefall Calculator]
-    [Ground Detector]
+  package "config" {
+    [ConfigManager]
   }
 
-  package "Simulation" {
-    [Simulation Controller]
+  package "physics" {
+    [FreefallCalculator]
+    [AirResistanceModel]
   }
 
-  package "Output" {
-    [Result Formatter]
-    [Warning Generator]
+  package "output" {
+    [ResultWriter]
+    [MarkdownGenerator]
+  }
+
+  package "models" {
+    [SimulationParameters]
+    [Apple]
+    [SimulationResults]
   }
 }
 
-[Parameter Collector] --> [Input Validator]
-[Input Validator] --> [Simulation Controller]
-[Simulation Controller] --> [Freefall Calculator]
-[Freefall Calculator] --> [Ground Detector]
-[Simulation Controller] --> [Result Formatter]
-[Ground Detector] --> [Warning Generator]
+[UserInputHandler] --> [InputValidator]
+[UserInputHandler] --> [SimulationParameters]
+[ConfigManager] --> [SimulationParameters]
+[FreefallCalculator] --> [Apple]
+[FreefallCalculator] --> [SimulationParameters]
+[FreefallCalculator] --> [AirResistanceModel]
+[FreefallCalculator] --> [SimulationResults]
+[ResultWriter] --> [SimulationResults]
+[ResultWriter] --> [MarkdownGenerator]
 
 @enduml

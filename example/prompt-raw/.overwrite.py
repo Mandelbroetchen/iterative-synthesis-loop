@@ -1,325 +1,285 @@
 from pathlib import Path
 
 files = {
-    "prompt-final/document.md": """# Freefall of an Apple - System Documentation
+    "prompt-final/document.md": """# Apple Freefall Simulation System Documentation
 
-## 1. Purpose and Goals
-This system simulates the freefall motion of an apple under constant gravitational acceleration. The program takes initial parameters as input and outputs the evolution of physical variables (position, velocity, acceleration) over time.
+## 1. Introduction
+### 1.1 Purpose
+The Apple Freefall Simulation is a Python application that models the freefall motion of an apple under Earth's gravity. The system allows users to input physical parameters and visualize the apple's trajectory over time, demonstrating basic principles of kinematics.
 
-### Key Objectives:
-- Model one-dimensional freefall motion with constant acceleration
-- Calculate and display position, velocity, and acceleration at discrete time intervals
-- Provide a simple, educational demonstration of basic physics principles
-- Allow customization of gravitational acceleration for different planetary environments
+### 1.2 Goals
+- Provide an educational tool for understanding freefall motion
+- Allow users to experiment with different physical parameters
+- Generate clear output of the simulation results
+- Implement a simple configuration system for simulation parameters
+
+### 1.3 Scope
+The system will:
+- Accept user input for physical parameters (initial height, mass, etc.)
+- Read simulation parameters from a config.json file
+- Calculate the apple's position over time during freefall
+- Output the evaluation results to out.md
+- Handle basic error cases for invalid inputs
 
 ## 2. Functional Requirements
 
-### 2.1 Input Requirements
-The system shall accept the following input parameters:
-- Initial height (h₀): Starting position of the apple (meters)
-- Initial velocity (v₀): Starting velocity of the apple (meters/second)
-- Time step (Δt): Interval between calculations (seconds)
-- Total duration (T): Total simulation time (seconds)
-- Gravitational acceleration (g): Acceleration due to gravity (meters/second²), defaulting to Earth's gravity (9.81 m/s²)
+### 2.1 Core Requirements
+| ID | Requirement | Description |
+|----|-------------|-------------|
+| FR-01 | User Input | System shall accept user input for physical parameters |
+| FR-02 | Configuration | System shall read simulation parameters from config.json |
+| FR-03 | Freefall Calculation | System shall calculate apple's position over time during freefall |
+| FR-04 | Output Generation | System shall write simulation results to out.md |
+| FR-05 | Time Step Simulation | System shall simulate motion using configurable time steps |
 
-### 2.2 Processing Requirements
-The system shall:
-1. Validate all input parameters to ensure they are physically plausible:
-   - Initial height must be ≥ 0
-   - Time step must be > 0
-   - Total duration must be > 0
-   - Gravitational acceleration must be ≥ 0
-2. Calculate position at each time step using:
-   h(t) = h₀ + v₀ * t + 0.5 * g * t²
-3. Calculate velocity at each time step using:
-   v(t) = v₀ + g * t
-4. Calculate acceleration (constant):
-   a(t) = g
-5. Iterate through time steps from t = 0 to t = T in increments of Δt
-6. Handle edge cases where the apple would hit the ground (h(t) ≤ 0) by stopping the simulation
+### 2.2 Input Requirements
+| ID | Requirement | Description |
+|----|-------------|-------------|
+| FR-06 | Initial Height | System shall accept initial height of the apple |
+| FR-07 | Mass Input | System shall accept mass of the apple |
+| FR-08 | Air Resistance Toggle | System shall allow enabling/disabling air resistance |
+| FR-09 | Simulation Duration | System shall accept total simulation time |
 
-### 2.3 Output Requirements
-The system shall output:
-1. A table showing the evolution of variables at each time step:
-   - Time (t)
-   - Position (h)
-   - Velocity (v)
-   - Acceleration (a)
-2. A summary of input parameters used for the simulation
-3. A warning if the simulation stopped early due to the apple hitting the ground
+## 3. System Architecture
 
-## 3. Technical Architecture
+### 3.1 Technical Stack
+- **Language**: Python 3.8+
+- **Configuration**: JSON for simulation parameters
+- **Physics Model**: Basic kinematics equations
+- **Output**: Markdown file generation
 
-### 3.1 System Components
-1. **Input Handler**: Collects and validates user input
-2. **Physics Engine**: Performs freefall calculations
-3. **Simulation Controller**: Manages the simulation loop and time steps
-4. **Output Formatter**: Formats results for display
-5. **Ground Detection**: Monitors for collision with ground level
+### 3.2 Component Overview
+1. **Input Handler**: Collects user input for physical parameters
+2. **Configuration Manager**: Reads and validates config.json
+3. **Physics Engine**: Calculates freefall motion
+4. **Output Generator**: Writes results to out.md
 
-### 3.2 Key Constraints
-- Assumes constant gravitational acceleration (no air resistance)
-- One-dimensional motion only
-- Ground level is fixed at h = 0
-- Time steps are uniform
-- No energy loss during ground collision (perfectly elastic collision for demonstration purposes)
+## 4. Design Decisions
 
-### 3.3 Assumptions
-- Earth's gravity (g = 9.81 m/s²) unless specified otherwise
-- Perfectly vertical freefall
-- No external forces other than gravity
-- The apple is treated as a point mass
-- Ground collision is detected when position ≤ 0
+### 4.1 Physics Model
+- Using simplified kinematic equations for freefall motion
+- Earth's gravity (g = 9.81 m/s²) as constant acceleration
+- Optional air resistance modeled as proportional to velocity squared
+- Time-stepped simulation for accurate results
 
-## 4. Mathematical Model
+### 4.2 Input Handling
+- Command-line interface for user input
+- Input validation for physical parameters
+- Default values for optional parameters
 
-The system implements the following equations of motion for constant acceleration:
+### 4.3 Configuration
+- JSON format for easy modification
+- Configurable time step for simulation accuracy
+- Configurable output precision
 
-1. Position as a function of time:
-   h(t) = h₀ + v₀ * t + (1/2) * g * t²
+## 5. Mathematical Model
 
-2. Velocity as a function of time:
-   v(t) = v₀ + g * t
+### 5.1 Basic Freefall (No Air Resistance)
+Position as a function of time:
 
-3. Acceleration (constant):
-   a(t) = g
+y(t) = y_0 - 0.5 * g * t^2
 
-For ground collision detection:
-- The simulation stops when h(t) ≤ 0
-- The time of impact is calculated by solving h(t) = 0:
-  t_impact = [-v₀ ± sqrt(v₀² + 2 * g * h₀)] / g
-  (only the positive root is physically meaningful)
+Velocity as a function of time:
 
-## 5. Example Use Cases
+v(t) = -g * t
 
-### 5.1 Basic Freefall Simulation
-**Scenario**: Simulate an apple falling from 10 meters with initial velocity of 0 m/s on Earth.
+Where:
+- y(t) is the height at time t
+- y_0 is the initial height
+- g is the acceleration due to gravity (9.81 m/s²)
+- v(t) is the velocity at time t
 
-**Input**:
-- h₀ = 10 m
-- v₀ = 0 m/s
-- Δt = 0.1 s
-- T = 1.5 s
-- g = 9.81 m/s²
+### 5.2 Freefall with Air Resistance
+Air resistance force:
 
-**Expected Output**:
-```
-Simulation Parameters:
-- Initial height: 10.00 m
-- Initial velocity: 0.00 m/s
-- Time step: 0.10 s
-- Total duration: 1.50 s
-- Gravitational acceleration: 9.81 m/s²
+F_air = 0.5 * ρ * C_d * A * v^2
 
-Results:
-Time (s) | Position (m) | Velocity (m/s) | Acceleration (m/s²)
----------------------------------------------------------------
-0.0      | 10.00        | 0.00           | 9.81
-0.1      | 9.95         | 0.98           | 9.81
-0.2      | 9.80         | 1.96           | 9.81
-...      | ...          | ...            | ...
-1.4      | 3.64         | 13.73          | 9.81
-1.5      | 2.53         | 14.72          | 9.81
-```
+Where:
+- ρ is the air density
+- C_d is the drag coefficient
+- A is the cross-sectional area
+- v is the velocity
 
-### 5.2 Ground Collision Detection
-**Scenario**: Simulate an apple falling from 5 meters with initial velocity of 0 m/s, showing ground collision.
+Net acceleration:
 
-**Input**:
-- h₀ = 5 m
-- v₀ = 0 m/s
-- Δt = 0.05 s
-- T = 2.0 s
-- g = 9.81 m/s²
+a = g - (F_air / m)
 
-**Expected Output**:
-```
-Simulation Parameters:
-- Initial height: 5.00 m
-- Initial velocity: 0.00 m/s
-- Time step: 0.05 s
-- Total duration: 2.00 s
-- Gravitational acceleration: 9.81 m/s²
+Where:
+- m is the mass of the apple
 
-Warning: Simulation stopped early - apple hit the ground at t ≈ 1.01 s
+## 6. User Interface Design
 
-Results:
-Time (s) | Position (m) | Velocity (m/s) | Acceleration (m/s²)
----------------------------------------------------------------
-0.00     | 5.00         | 0.00           | 9.81
-0.05     | 4.98         | 0.49           | 9.81
-...      | ...          | ...            | ...
-1.00     | 0.09         | 9.81           | 9.81
-1.05     | -0.40        | 10.30          | 9.81
-```
+### 6.1 Input Flow
+1. Prompt for initial height (meters)
+2. Prompt for apple mass (kilograms)
+3. Prompt for air resistance toggle (yes/no)
+4. If air resistance enabled, prompt for drag coefficient and cross-sectional area
+5. Prompt for simulation duration (seconds)
 
-### 5.3 Lunar Freefall Simulation
-**Scenario**: Simulate an apple falling on the Moon (g = 1.62 m/s²).
+### 6.2 Output Format
+The out.md file will contain:
+- Simulation parameters
+- Table of time, position, and velocity values
+- Graph of position vs. time (ASCII art)
+- Summary statistics (max velocity, time to impact)
 
-**Input**:
-- h₀ = 10 m
-- v₀ = 0 m/s
-- Δt = 0.2 s
-- T = 4.0 s
-- g = 1.62 m/s²
+## 7. Implementation Plan
 
-**Expected Output**:
-```
-Simulation Parameters:
-- Initial height: 10.00 m
-- Initial velocity: 0.00 m/s
-- Time step: 0.20 s
-- Total duration: 4.00 s
-- Gravitational acceleration: 1.62 m/s²
+### 7.1 Development Phases
+1. **Core Physics**: Implement basic freefall calculations
+2. **Input Handling**: Develop user input collection
+3. **Configuration**: Implement config.json reading
+4. **Output Generation**: Create out.md writer
+5. **Testing**: Validate physics calculations and edge cases
 
-Results:
-Time (s) | Position (m) | Velocity (m/s) | Acceleration (m/s²)
----------------------------------------------------------------
-0.0      | 10.00        | 0.00           | 1.62
-0.2      | 9.97         | 0.32           | 1.62
-0.4      | 9.87         | 0.65           | 1.62
-...      | ...          | ...            | ...
-3.8      | 3.57         | 6.16           | 1.62
-4.0      | 2.96         | 6.48           | 1.62
-```
+### 7.2 Testing Strategy
+- Unit tests for physics calculations
+- Integration tests for input/output flow
+- Validation tests for edge cases (zero height, negative mass)
+- Performance tests for large time steps
 
-## 6. Design Decisions
-
-### 6.1 Ground Collision Handling
-- The system implements ground collision detection to provide more realistic simulations
-- When position ≤ 0, the simulation stops and reports the impact time
-- This feature helps demonstrate the physical reality of objects not passing through the ground
-
-### 6.2 Time Step Selection
-- The system allows customizable time steps to balance accuracy and computational efficiency
-- Smaller time steps provide more accurate results but require more calculations
-- The default time step (if not specified) is set to 0.1 seconds for reasonable accuracy
-
-### 6.3 Gravitational Acceleration
-- The system allows customization of gravitational acceleration to support:
-  - Educational demonstrations of physics on different planets
-  - Comparison of freefall behavior in different gravitational fields
-  - Special cases like zero gravity or microgravity environments
-
-## 7. Limitations and Future Enhancements
-
-### 7.1 Current Limitations
-- No air resistance or drag forces
-- Only one-dimensional motion
-- Perfectly elastic collision with ground
-- No visualization of results
-- No energy calculations
-
-### 7.2 Future Enhancements
-- Add air resistance for more realistic simulations
-- Implement two-dimensional motion (projectile motion)
-- Add energy calculations (potential and kinetic energy)
-- Include visualization of the freefall trajectory
-- Add support for variable gravitational fields
-- Implement more sophisticated collision physics
+## 8. Glossary
+- **Freefall**: Motion of an object under the influence of gravity only
+- **Kinematics**: Study of motion without considering forces
+- **Air Resistance**: Force opposing motion through air
+- **Time Step**: Interval between calculations in the simulation
 """,
-    "prompt-final/usecase-diagram.uml": """@startuml usecase-diagram
+    "prompt-final/usecase-diagram.puml": """@startuml usecase-diagram
 
 left to right direction
 
-actor User
+actor User as user
 
-rectangle FreefallSimulation {
-  usecase (Input Parameters) as UC1
-  usecase (Run Simulation) as UC2
-  usecase (View Results) as UC3
-  usecase (Set Gravitational Acceleration) as UC4
-  usecase (Detect Ground Collision) as UC5
+rectangle "Apple Freefall Simulation System" {
+  usecase "Enter Physical Parameters" as UC1
+  usecase "Configure Simulation" as UC2
+  usecase "Run Simulation" as UC3
+  usecase "View Results" as UC4
+  usecase "Adjust Air Resistance" as UC5
 }
 
-User --> UC1
-User --> UC2
-User --> UC3
-User --> UC4
+user --> UC1
+user --> UC2
+user --> UC3
+user --> UC4
+user --> UC5
 
-UC1 .> UC2 : includes
+UC1 .> UC3 : includes
 UC2 .> UC3 : includes
-UC2 .> UC5 : includes
 
 @enduml
 """,
-    "prompt-final/package-diagram.uml": """@startuml package-diagram
+    "prompt-final/package-diagram.puml": """@startuml package-diagram
 
-package "Freefall Simulation" {
-  package "Input" {
-    [Parameter Collector]
-    [Input Validator]
+package "Apple Freefall Simulation" {
+  package "input" {
+    [UserInputHandler]
+    [InputValidator]
   }
 
-  package "Physics" {
-    [Freefall Calculator]
-    [Ground Detector]
+  package "config" {
+    [ConfigManager]
   }
 
-  package "Simulation" {
-    [Simulation Controller]
+  package "physics" {
+    [FreefallCalculator]
+    [AirResistanceModel]
   }
 
-  package "Output" {
-    [Result Formatter]
-    [Warning Generator]
+  package "output" {
+    [ResultWriter]
+    [MarkdownGenerator]
+  }
+
+  package "models" {
+    [SimulationParameters]
+    [Apple]
+    [SimulationResults]
   }
 }
 
-[Parameter Collector] --> [Input Validator]
-[Input Validator] --> [Simulation Controller]
-[Simulation Controller] --> [Freefall Calculator]
-[Freefall Calculator] --> [Ground Detector]
-[Simulation Controller] --> [Result Formatter]
-[Ground Detector] --> [Warning Generator]
+[UserInputHandler] --> [InputValidator]
+[UserInputHandler] --> [SimulationParameters]
+[ConfigManager] --> [SimulationParameters]
+[FreefallCalculator] --> [Apple]
+[FreefallCalculator] --> [SimulationParameters]
+[FreefallCalculator] --> [AirResistanceModel]
+[FreefallCalculator] --> [SimulationResults]
+[ResultWriter] --> [SimulationResults]
+[ResultWriter] --> [MarkdownGenerator]
 
 @enduml
 """,
-    "prompt-final/class-diagram.uml": """@startuml class-diagram
+    "prompt-final/class-diagram.puml": """@startuml class-diagram
 
-class FreefallSimulator {
-  -h0: float
-  -v0: float
-  -dt: float
-  -T: float
-  -g: float
-  +__init__(h0: float, v0: float, dt: float, T: float, g: float = 9.81)
-  +validate_inputs(): bool
-  +calculate_position(t: float): float
-  +calculate_velocity(t: float): float
-  +run_simulation(): SimulationResult
-  -detect_ground_collision(t: float, h: float): bool
+class Apple {
+  +mass: float
+  +drag_coefficient: float
+  +cross_sectional_area: float
+  +position: float
+  +velocity: float
+  +__init__(mass: float, drag_coefficient: float, cross_sectional_area: float)
 }
 
-class SimulationResult {
-  +time: list[float]
-  +position: list[float]
-  +velocity: list[float]
-  +acceleration: list[float]
-  +impact_time: float | None
-  +completed: bool
-  +__init__(time: list, position: list, velocity: list, acceleration: list, impact_time: float | None)
-  +display(): str
-  +get_summary(): str
+class SimulationParameters {
+  +initial_height: float
+  +time_step: float
+  +total_time: float
+  +air_resistance: bool
+  +gravity: float
+  +output_precision: int
+  +__init__(initial_height: float, time_step: float, total_time: float)
 }
 
-class InputValidator {
-  +validate_height(h0: float): bool
-  +validate_velocity(v0: float): bool
-  +validate_time_step(dt: float): bool
-  +validate_duration(T: float): bool
-  +validate_gravity(g: float): bool
-  +validate_all(h0: float, v0: float, dt: float, T: float, g: float): bool
+class FreefallCalculator {
+  +parameters: SimulationParameters
+  +apple: Apple
+  +results: SimulationResults
+  +__init__(parameters: SimulationParameters, apple: Apple)
+  +calculate_freefall(): SimulationResults
+  +calculate_position(time: float): float
+  +calculate_velocity(time: float): float
 }
 
-class WarningGenerator {
-  +ground_collision_warning(impact_time: float): str
-  +early_termination_warning(): str
+class AirResistanceModel {
+  +{static} calculate_air_resistance(velocity: float, apple: Apple): float
 }
 
-FreefallSimulator --> SimulationResult : produces >
-FreefallSimulator --> InputValidator : uses >
-FreefallSimulator --> WarningGenerator : uses >
+class SimulationResults {
+  +time_points: list[float]
+  +positions: list[float]
+  +velocities: list[float]
+  +max_velocity: float
+  +time_to_impact: float
+  +__init__()
+  +add_result(time: float, position: float, velocity: float)
+}
+
+class ConfigManager {
+  +{static} load_config(file_path: str): SimulationParameters
+  +{static} validate_config(config: dict): bool
+}
+
+class UserInputHandler {
+  +{static} get_initial_height(): float
+  +{static} get_mass(): float
+  +{static} get_air_resistance(): bool
+  +{static} get_drag_coefficient(): float
+  +{static} get_cross_sectional_area(): float
+  +{static} get_simulation_duration(): float
+}
+
+class ResultWriter {
+  +{static} write_results(file_path: str, results: SimulationResults, parameters: SimulationParameters)
+}
+
+FreefallCalculator "1" *-- "1" SimulationParameters
+FreefallCalculator "1" *-- "1" Apple
+FreefallCalculator "1" *-- "1" SimulationResults
+FreefallCalculator "1" --> "1" AirResistanceModel
+ConfigManager "1" --> "1" SimulationParameters
+ResultWriter "1" --> "1" SimulationResults
+ResultWriter "1" --> "1" SimulationParameters
 
 @enduml
 """
