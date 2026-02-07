@@ -1,153 +1,20 @@
-@startuml FreefallPackageDiagram
+@startuml package-diagram
 
 package "Freefall Simulation" {
-  package "core" {
-    [PhysicsEngine]
-    [SimulationController]
-    [IntegrationMethods <<enum>>]
-    [SimulationState <<enum>>]
+  package "Input" {
+    [Parameter Collector]
   }
 
-  package "models" {
-    [Apple]
-    [Environment]
-    [Trajectory]
-    [Vector2D]
-    [EnergyValues]
-    [PhysicsConfig]
-    [SimulationConfig]
+  package "Physics" {
+    [Freefall Calculator]
   }
 
-  package "ui" {
-    [MainWindow]
-    [VisualizationPanel]
-    [ControlPanel]
-    [SimulationSettingsDialog]
-    [ResultsViewer]
-    [EnergyGraphPanel]
-    [TrajectoryPlot]
-    [ScenarioSelector]
-  }
-
-  package "utils" {
-    [DataExporter]
-    [MathUtils]
-    [PhysicsValidator]
-    [ConfigurationManager]
-    [ScenarioManager]
-    [UnitConverter]
-  }
-
-  package "io" {
-    [CSVExporter]
-    [JSONExporter]
-    [DataImporter]
-    [ConfigLoader]
-    [ConfigSaver]
-  }
-
-  package "config" {
-    [DefaultConfig]
-    [UserConfig]
-    [ScenarioConfig]
-  }
-
-  package "tests" {
-    [PhysicsEngineTests]
-    [SimulationControllerTests]
-    [IntegrationMethodTests]
-    [EnergyCalculationTests]
-    [CollisionTests]
-    [DataExportTests]
-  }
-
-  package "examples" {
-    [BasicFreefall]
-    [EnergyConservation]
-    [AirResistanceDemo]
-    [GravityVariation]
-    [IntegrationComparison]
+  package "Output" {
+    [Result Formatter]
   }
 }
 
-[PhysicsEngine] --> [Apple]
-[PhysicsEngine] --> [Environment]
-[PhysicsEngine] --> [IntegrationMethods]
-[SimulationController] --> [PhysicsEngine]
-[SimulationController] --> [Trajectory]
-[SimulationController] --> [SimulationState]
-[MainWindow] --> [VisualizationPanel]
-[MainWindow] --> [ControlPanel]
-[MainWindow] --> [ResultsViewer]
-[ControlPanel] --> [SimulationController]
-[ControlPanel] --> [SimulationSettingsDialog]
-[VisualizationPanel] --> [Trajectory]
-[VisualizationPanel] --> [EnergyGraphPanel]
-[VisualizationPanel] --> [TrajectoryPlot]
-[DataExporter] --> [CSVExporter]
-[DataExporter] --> [JSONExporter]
-[DataExporter] --> [Trajectory]
-[PhysicsValidator] --> [Trajectory]
-[ConfigurationManager] --> [SimulationConfig]
-[ConfigurationManager] --> [PhysicsConfig]
-[ConfigurationManager] --> [UserConfig]
-[ScenarioManager] --> [ScenarioConfig]
-[ScenarioManager] --> [ScenarioSelector]
-[ConfigLoader] --> [DefaultConfig]
-[ConfigSaver] --> [UserConfig]
-
-note top of core
-  Contains the core simulation
-  logic and physics calculations.
-  Implements numerical integration
-  methods and manages simulation
-  state and progression.
-end note
-
-note right of models
-  Data models representing
-  physical objects, simulation
-  state, and configuration.
-  Includes mathematical
-  representations of vectors,
-  energy, and trajectories.
-end note
-
-note bottom of ui
-  User interface components
-  for interaction, visualization,
-  and simulation control.
-  Provides real-time feedback
-  and configuration options.
-end note
-
-note left of utils
-  Utility classes for calculations,
-  validation, data management,
-  and scenario handling.
-  Includes mathematical utilities
-  and configuration management.
-end note
-
-note right of io
-  Input/output operations for
-  data export, configuration
-  loading/saving, and data
-  import functionality.
-end note
-
-note bottom of tests
-  Unit and integration tests
-  for verifying physics accuracy,
-  numerical stability, and
-  system functionality.
-end note
-
-note left of examples
-  Predefined simulation scenarios
-  demonstrating various physics
-  concepts and simulation features.
-  Useful for education and testing.
-end note
+[Parameter Collector] --> [Freefall Calculator]
+[Freefall Calculator] --> [Result Formatter]
 
 @enduml

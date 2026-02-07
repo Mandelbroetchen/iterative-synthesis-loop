@@ -1,746 +1,88 @@
-# Freefall of an Apple - Physics Simulation
+# Freefall of an Apple - System Documentation
 
-## Overview
-This project simulates the freefall motion of an apple under Earth's gravity, demonstrating fundamental physics principles. The simulation serves as both an educational tool and a foundation for more complex physics engines, accurately modeling the kinematics and dynamics of freefall motion.
+## 1. Purpose and Goals
+This system simulates the freefall motion of an apple under constant gravitational acceleration. The program takes initial parameters as input and outputs the evolution of physical variables (position, velocity, acceleration) over time.
 
-## Core Physics Principles
-- **Newton's Laws of Motion**: Foundation for understanding forces and motion
-- **Kinematic Equations**: Mathematical description of motion without considering forces
-- **Energy Conservation**: Transformation between potential and kinetic energy
-- **Gravitational Acceleration**: Constant acceleration due to Earth's gravity (9.81 m/s²)
-- **Air Resistance**: Drag force opposing motion (optional in simulation)
+### Key Objectives:
+- Model one-dimensional freefall motion with constant acceleration
+- Calculate and display position, velocity, and acceleration at discrete time intervals
+- Provide a simple, educational demonstration of basic physics principles
 
-## Mathematical Foundation
+## 2. Functional Requirements
 
-### Basic Freefall Model (No Air Resistance)
-The simulation implements these fundamental kinematic equations:
+### 2.1 Input Requirements
+The system shall accept the following input parameters:
+- Initial height (h₀): Starting position of the apple (meters)
+- Initial velocity (v₀): Starting velocity of the apple (meters/second)
+- Time step (Δt): Interval between calculations (seconds)
+- Total duration (T): Total simulation time (seconds)
+- Gravitational acceleration (g): Typically 9.81 m/s² (meters/second²)
 
-1. **Position as function of time**:
-   y(t) = y₀ + v₀t + ½gt²
+### 2.2 Processing Requirements
+The system shall:
+1. Calculate position at each time step using:
+   h(t) = h₀ + v₀ * t + 0.5 * g * t²
+2. Calculate velocity at each time step using:
+   v(t) = v₀ + g * t
+3. Calculate acceleration (constant):
+   a(t) = g
+4. Iterate through time steps from t = 0 to t = T in increments of Δt
 
-2. **Velocity as function of time**:
-   v(t) = v₀ + gt
+### 2.3 Output Requirements
+The system shall output a table showing:
+- Time (t)
+- Position (h)
+- Velocity (v)
+- Acceleration (a)
 
-3. **Acceleration**:
-   a = g (constant)
+## 3. Technical Architecture
 
-4. **Energy relationships**:
-   - Potential Energy: PE = mgh
-   - Kinetic Energy: KE = ½mv²
-   - Total Mechanical Energy: E = PE + KE (conserved)
+### 3.1 System Components
+1. **Input Handler**: Collects and validates user input
+2. **Physics Engine**: Performs freefall calculations
+3. **Output Formatter**: Formats results for display
 
-### Advanced Model (With Air Resistance)
-When air resistance is enabled, the simulation uses:
+### 3.2 Key Constraints
+- Assumes constant gravitational acceleration (no air resistance)
+- One-dimensional motion only
+- No collision detection (apple falls indefinitely)
 
-1. **Net force equation**:
-   Fₙₑₜ = mg - ½ρv²CA
+### 3.3 Assumptions
+- Earth's gravity (g = 9.81 m/s²) unless specified otherwise
+- Perfectly vertical freefall
+- Time steps are uniform
 
-2. **Acceleration with drag**:
-   a = g - (ρv²CA)/(2m)
+## 4. Mathematical Model
 
-3. **Terminal velocity**:
-   vₜ = √(2mg/ρCA)
+The system implements the following equations of motion:
 
-Where:
-- y₀ = initial height (m)
-- v₀ = initial velocity (m/s)
-- g = gravitational acceleration (9.81 m/s²)
-- t = time (s)
-- ρ = air density (1.225 kg/m³ at sea level)
-- C = drag coefficient (≈0.47 for sphere)
-- A = cross-sectional area (m²)
-- m = mass of apple (kg)
+1. Position as a function of time:
+   h(t) = h₀ + v₀ * t + (1/2) * g * t²
 
-## System Architecture
+2. Velocity as a function of time:
+   v(t) = v₀ + g * t
 
-### High-Level Component Diagram
+3. Acceleration (constant):
+   a(t) = g
+
+## 5. Example Use Case
+
+**Scenario**: Simulate an apple falling from 10 meters with initial velocity of 0 m/s.
+
+**Input**:
+- h₀ = 10 m
+- v₀ = 0 m/s
+- Δt = 0.1 s
+- T = 1.5 s
+- g = 9.81 m/s²
+
+**Expected Output**:
 ```
-┌───────────────────────┐    ┌───────────────────────┐    ┌───────────────────────┐
-│      User Interface   │    │    Physics Engine     │    │    Data Management    │
-│  ┌─────────┐ ┌───────┐│    │  ┌─────────┐ ┌───────┐│    │  ┌─────────┐ ┌───────┐│
-│  │Control  │ │Visual-││    │  │Apple    │ │Environ││    │  │Trajectory│ │Export ││
-│  │Panel    │ │ization││    │  │Model    │ │ment   ││    │  │Storage  │ │Tools  ││
-│  └─────────┘ └───────┘│    │  └─────────┘ └───────┘│    │  └─────────┘ └───────┘│
-└───────────────────────┘    └───────────────────────┘    └───────────────────────┘
-          │                              │                              │
-          └──────────────┬───────────────┘                              │
-                                 │                                      │
-                                 ▼                                      ▼
-                        ┌───────────────────────┐              ┌─────────────────┐
-                        │   Simulation Core     │              │  Analysis Tools │
-                        │  ┌─────────────────┐  │              │  ┌───────────┐  │
-                        │  │Simulation       │  │              │  │Data       │  │
-                        │  │Controller       │  │              │  │Analysis   │  │
-                        │  └─────────────────┘  │              │  └───────────┘  │
-                        └───────────────────────┘              └─────────────────┘
+Time (s) | Position (m) | Velocity (m/s) | Acceleration (m/s²)
+---------------------------------------------------------------
+0.0      | 10.00        | 0.00           | 9.81
+0.1      | 9.95         | 0.98           | 9.81
+0.2      | 9.80         | 1.96           | 9.81
+...      | ...          | ...            | ...
+1.5      | 2.53         | 14.72          | 9.81
 ```
-
-## Key Features
-
-### Core Simulation Capabilities
-1. **Real-time Physics Calculation**
-   - Position, velocity, and acceleration tracking
-   - Millisecond precision timing
-   - Configurable time steps (1ms to 1s)
-
-2. **Multiple Integration Methods**
-   - Euler method (basic)
-   - Verlet integration (improved stability)
-   - Runge-Kutta (high accuracy)
-
-3. **Energy System**
-   - Potential energy calculation
-   - Kinetic energy calculation
-   - Total mechanical energy tracking
-   - Energy conservation verification
-
-4. **Collision Handling**
-   - Ground plane detection
-   - Perfectly inelastic collision
-   - Bounce coefficient (configurable)
-
-### User Interface Features
-1. **Visualization**
-   - Real-time animation of falling apple
-   - Customizable apple appearance
-   - Adjustable viewing angle
-
-2. **Control Panel**
-   - Start/pause/stop simulation
-   - Adjustable time scale
-   - Reset functionality
-
-3. **Configuration**
-   - Initial height adjustment
-   - Initial velocity setting
-   - Gravity modification
-   - Air resistance toggle
-
-4. **Data Display**
-   - Current position readout
-   - Velocity and acceleration display
-   - Energy values monitoring
-
-### Data Management
-1. **Export Formats**
-   - CSV (time, position, velocity, acceleration, energy)
-   - JSON (complete simulation state with metadata)
-   - Customizable precision and units
-
-2. **Analysis Tools**
-   - Time of flight calculation
-   - Maximum height determination
-   - Impact velocity measurement
-   - Energy conservation analysis
-
-## Implementation Details
-
-### Physics Engine
-```python
-class PhysicsEngine:
-    def __init__(self, apple, environment):
-        self.apple = apple
-        self.environment = environment
-        self.integration_method = IntegrationMethod.VERLET
-        self.trajectory = Trajectory()
-
-    def update_physics(self, time_step):
-        # Calculate forces
-        gravity_force = Vector2D(0, self.apple.mass * self.environment.gravity)
-        drag_force = Vector2D(0, 0)
-
-        if self.environment.air_resistance_enabled:
-            velocity = self.apple.velocity
-            drag_magnitude = 0.5 * self.environment.air_density *                             velocity.magnitude()**2 *                             self.apple.drag_coefficient *                             self.apple.cross_sectional_area
-            drag_force = velocity.normalize().multiply(-drag_magnitude)
-
-        net_force = gravity_force.add(drag_force)
-
-        # Update position and velocity based on integration method
-        if self.integration_method == IntegrationMethod.EULER:
-            self._euler_integration(net_force, time_step)
-        elif self.integration_method == IntegrationMethod.VERLET:
-            self._verlet_integration(net_force, time_step)
-        elif self.integration_method == IntegrationMethod.RUNGE_KUTTA:
-            self._runge_kutta_integration(net_force, time_step)
-
-        # Check for collision
-        if self.environment.check_collision(self.apple.position):
-            self._handle_collision()
-
-        # Record trajectory point
-        energy = self.calculate_energy()
-        self.trajectory.add_point(
-            self.apple.position.copy(),
-            self.current_time,
-            self.apple.velocity.copy(),
-            net_force.multiply(1/self.apple.mass),
-            energy
-        )
-```
-
-### Simulation Controller
-```python
-class SimulationController:
-    def __init__(self, physics_engine, time_step=0.01):
-        self.physics_engine = physics_engine
-        self.time_step = time_step
-        self.is_running = False
-        self.current_time = 0.0
-        self.simulation_speed = 1.0
-
-    def start_simulation(self):
-        self.is_running = True
-
-    def pause_simulation(self):
-        self.is_running = False
-
-    def reset_simulation(self):
-        self.is_running = False
-        self.current_time = 0.0
-        self.physics_engine.reset()
-
-    def update(self):
-        if not self.is_running:
-            return
-
-        # Calculate actual time step considering simulation speed
-        actual_time_step = self.time_step * self.simulation_speed
-
-        # Update physics
-        self.physics_engine.update_physics(actual_time_step)
-        self.current_time += actual_time_step
-```
-
-## Configuration Parameters
-
-| Parameter               | Default Value | Unit   | Description                                  | Range/Options                     |
-|-------------------------|---------------|--------|----------------------------------------------|-----------------------------------|
-| Initial Height          | 10.0          | m      | Starting position above ground               | 0.1 - 1000.0                      |
-| Initial Velocity        | 0.0           | m/s    | Starting vertical velocity                   | -100.0 - 100.0                    |
-| Gravity                 | 9.81          | m/s²   | Gravitational acceleration                   | 0.1 - 25.0                        |
-| Time Step               | 0.01          | s      | Simulation time increment                    | 0.001 - 1.0                       |
-| Air Resistance          | false         | -      | Toggle air resistance effects                | true/false                        |
-| Air Density             | 1.225         | kg/m³  | Air density for drag calculations            | 0.0 - 2.0                         |
-| Apple Mass              | 0.1           | kg     | Mass of the apple                            | 0.01 - 1.0                        |
-| Apple Radius            | 0.05          | m      | Radius for drag calculations                 | 0.01 - 0.2                        |
-| Drag Coefficient        | 0.47          | -      | Drag coefficient for spherical apple         | 0.1 - 2.0                         |
-| Bounce Coefficient      | 0.0           | -      | Energy retained after collision (0-1)        | 0.0 - 1.0                         |
-| Integration Method      | VERLET        | -      | Numerical integration method                 | EULER/VERLET/RUNGE_KUTTA          |
-| Simulation Speed        | 1.0           | -      | Multiplier for simulation speed              | 0.1 - 10.0                        |
-| Ground Level            | 0.0           | m      | Position of ground plane                     | -10.0 - 10.0                      |
-
-## Educational Applications
-
-### Lesson Plan: Understanding Freefall
-**Objective**: Students will understand the relationship between position, velocity, and acceleration in freefall motion.
-
-**Activities**:
-1. **Basic Freefall Demonstration**
-   - Set initial height to 100m with zero initial velocity
-   - Run simulation with 0.1s time step
-   - Observe quadratic position vs time relationship
-   - Compare with theoretical predictions
-
-2. **Energy Conservation**
-   - Enable energy tracking
-   - Observe transformation between potential and kinetic energy
-   - Verify total mechanical energy remains constant
-   - Introduce concept of energy conservation
-
-3. **Air Resistance Effects**
-   - Enable air resistance
-   - Observe terminal velocity behavior
-   - Compare with no-air-resistance case
-   - Discuss real-world implications
-
-4. **Gravity Variation**
-   - Change gravity to Moon (1.62 m/s²) and Jupiter (24.79 m/s²)
-   - Compare time of fall and impact velocity
-   - Discuss how gravity affects motion
-
-### Advanced Physics Exploration
-1. **Numerical Methods Comparison**
-   - Run identical simulations with Euler, Verlet, and Runge-Kutta methods
-   - Compare accuracy and stability
-   - Discuss trade-offs between methods
-
-2. **Drag Coefficient Analysis**
-   - Vary drag coefficient for different shapes
-   - Measure terminal velocity for each case
-   - Relate to real-world objects
-
-3. **Energy Loss in Collisions**
-   - Set non-zero bounce coefficient
-   - Observe energy loss after each bounce
-   - Calculate coefficient of restitution
-
-## Research Applications
-
-### Experimental Validation
-1. **Data Collection**
-   - Run multiple simulations with varying parameters
-   - Export data for statistical analysis
-   - Compare with theoretical predictions
-
-2. **Parameter Estimation**
-   - Use simulation to estimate drag coefficients
-   - Fit model parameters to experimental data
-   - Validate physics model
-
-3. **Sensitivity Analysis**
-   - Study effect of parameter variations
-   - Identify most influential factors
-   - Quantify uncertainty in predictions
-
-### Advanced Physics Research
-1. **Variable Gravity Fields**
-   - Implement altitude-dependent gravity
-   - Study motion in non-uniform fields
-   - Compare with constant gravity approximation
-
-2. **Turbulence Modeling**
-   - Add stochastic wind effects
-   - Study chaotic motion patterns
-   - Analyze statistical properties
-
-3. **Relativistic Effects**
-   - Extend model to include relativistic corrections
-   - Study high-velocity scenarios
-   - Compare with classical predictions
-
-## Limitations and Assumptions
-
-### Current Limitations
-1. **Dimensionality**
-   - Only supports vertical motion (1D)
-   - No horizontal velocity components
-   - Limited to planar motion
-
-2. **Environmental Assumptions**
-   - Constant air density (no altitude variation)
-   - No wind or atmospheric turbulence
-   - Uniform gravitational field
-
-3. **Collision Model**
-   - Perfectly flat ground plane
-   - No surface deformation
-   - Simplified bounce physics
-
-4. **Apple Model**
-   - Spherical shape assumption
-   - Uniform mass distribution
-   - No deformation during fall
-
-5. **Numerical Limitations**
-   - Finite time step introduces discretization errors
-   - Integration methods have inherent inaccuracies
-   - Limited precision in floating-point calculations
-
-### Underlying Assumptions
-1. **Classical Mechanics**
-   - Newtonian physics framework
-   - No relativistic or quantum effects
-   - Macroscopic scale objects
-
-2. **Ideal Conditions**
-   - Vacuum conditions when air resistance disabled
-   - No other forces acting on apple
-   - Point mass approximation for basic model
-
-3. **Material Properties**
-   - Apple treated as rigid body
-   - Constant mass and density
-   - No internal degrees of freedom
-
-## Future Enhancements
-
-### Physics Improvements
-1. **Multi-dimensional Motion**
-   - 2D and 3D motion support
-   - Horizontal velocity components
-   - Projectile motion
-
-2. **Advanced Air Resistance**
-   - Altitude-dependent air density
-   - Temperature effects on drag
-   - Turbulence modeling
-
-3. **Deformable Objects**
-   - Non-spherical apple shapes
-   - Object deformation during collision
-   - Internal structure modeling
-
-4. **Environmental Effects**
-   - Wind patterns and gusts
-   - Atmospheric pressure variations
-   - Temperature gradients
-
-### Simulation Features
-1. **Real-time Graphing**
-   - Position vs time graphs
-   - Velocity vs time graphs
-   - Energy vs time graphs
-   - Interactive plotting
-
-2. **Multi-object Simulation**
-   - Multiple apples with interactions
-   - Collision detection between objects
-   - Center of mass calculations
-
-3. **Advanced Visualization**
-   - 3D rendering
-   - Virtual reality support
-   - Augmented reality integration
-
-4. **Experimental Integration**
-   - Data import from real experiments
-   - Model validation tools
-   - Parameter fitting algorithms
-
-### Educational Tools
-1. **Interactive Lessons**
-   - Guided tutorials
-   - Step-by-step experiments
-   - Quiz and assessment tools
-
-2. **Customizable Scenarios**
-   - Predefined educational scenarios
-   - Teacher-defined experiments
-   - Student-designed projects
-
-3. **Collaborative Features**
-   - Multi-user simulation
-   - Classroom management tools
-   - Shared experiment workspaces
-
-## Validation and Verification
-
-### Theoretical Validation
-1. **Analytical Solutions**
-   - Compare with closed-form solutions
-   - Verify energy conservation
-   - Check time of flight calculations
-
-2. **Conservation Laws**
-   - Verify momentum conservation
-   - Check energy conservation
-   - Validate symmetry properties
-
-3. **Dimensional Analysis**
-   - Check units consistency
-   - Verify dimensional homogeneity
-   - Validate scaling relationships
-
-### Numerical Validation
-1. **Convergence Testing**
-   - Time step refinement studies
-   - Compare integration methods
-   - Verify numerical stability
-
-2. **Error Analysis**
-   - Quantify discretization errors
-   - Estimate round-off errors
-   - Calculate total numerical error
-
-3. **Benchmark Problems**
-   - Compare with standard test cases
-   - Validate against known solutions
-   - Verify implementation correctness
-
-### Experimental Validation
-1. **Real-world Comparison**
-   - Compare with high-speed camera data
-   - Validate against published results
-   - Cross-check with other simulations
-
-2. **Parameter Sensitivity**
-   - Study effect of parameter variations
-   - Identify critical parameters
-   - Quantify uncertainty propagation
-
-3. **Statistical Analysis**
-   - Multiple simulation runs
-   - Confidence interval calculation
-   - Hypothesis testing
-
-## Getting Started
-
-### Installation
-```bash
-# Clone the repository
-git clone https://github.com/yourusername/freefall-simulation.git
-
-# Navigate to project directory
-cd freefall-simulation
-
-# Install dependencies
-pip install -r requirements.txt
-
-# Run the simulation
-python main.py
-```
-
-### Basic Usage
-1. **Configure Simulation**
-   - Set initial height (default: 10m)
-   - Set initial velocity (default: 0 m/s)
-   - Choose gravity value (default: 9.81 m/s²)
-   - Toggle air resistance (default: off)
-
-2. **Run Simulation**
-   - Click "Start" to begin simulation
-   - Use "Pause" to temporarily stop
-   - Click "Reset" to return to initial conditions
-
-3. **Analyze Results**
-   - View real-time position and velocity
-   - Monitor energy values
-   - Export data for further analysis
-
-### Example Configuration
-```python
-# Create simulation with custom parameters
-config = SimulationConfig(
-    initial_height=50.0,       # 50 meters
-    initial_velocity=5.0,      # 5 m/s upward
-    gravity=9.81,              # Earth gravity
-    time_step=0.01,            # 10ms time step
-    air_resistance=True,       # Enable air resistance
-    apple_mass=0.15,           # 150g apple
-    apple_radius=0.06          # 6cm radius
-)
-
-# Create and run simulation
-simulation = FreefallSimulation(config)
-simulation.run()
-```
-
-## API Reference
-
-### Core Classes
-
-#### Apple
-Represents the falling object with physical properties.
-
-**Attributes**:
-- `mass`: float - mass of the apple in kg
-- `position`: Vector2D - current position
-- `velocity`: Vector2D - current velocity
-- `radius`: float - radius for drag calculations
-- `drag_coefficient`: float - drag coefficient
-
-**Methods**:
-- `update_position(time_step, environment)`: Update position based on forces
-- `get_kinetic_energy()`: Calculate current kinetic energy
-- `get_potential_energy(ground_level)`: Calculate current potential energy
-- `apply_force(force)`: Apply external force to apple
-
-#### Environment
-Represents the physical environment.
-
-**Attributes**:
-- `gravity`: float - gravitational acceleration
-- `air_density`: float - air density for drag calculations
-- `ground_level`: float - position of ground plane
-- `air_resistance_enabled`: bool - toggle air resistance
-
-**Methods**:
-- `apply_air_resistance(velocity, apple)`: Calculate drag force
-- `check_collision(position)`: Check if position is below ground
-- `get_gravity()`: Get current gravity value
-
-#### PhysicsEngine
-Core physics calculations.
-
-**Attributes**:
-- `apple`: Apple - the falling object
-- `environment`: Environment - simulation environment
-- `integration_method`: IntegrationMethod - numerical method
-- `trajectory`: Trajectory - recorded motion data
-
-**Methods**:
-- `update_physics(time_step)`: Update physics for one time step
-- `calculate_energy()`: Calculate current energy values
-- `set_integration_method(method)`: Change integration method
-- `reset()`: Reset engine to initial state
-
-#### SimulationController
-Manages simulation execution.
-
-**Attributes**:
-- `physics_engine`: PhysicsEngine - physics calculations
-- `is_running`: bool - simulation state
-- `current_time`: float - elapsed simulation time
-- `time_step`: float - simulation time increment
-
-**Methods**:
-- `start_simulation()`: Begin simulation
-- `pause_simulation()`: Pause simulation
-- `reset_simulation()`: Return to initial state
-- `update()`: Advance simulation by one time step
-- `set_time_step(time_step)`: Change time step
-
-### Data Structures
-
-#### Vector2D
-2D vector for position, velocity, and force calculations.
-
-**Attributes**:
-- `x`: float - x component
-- `y`: float - y component
-
-**Methods**:
-- `add(v)`: Vector addition
-- `subtract(v)`: Vector subtraction
-- `multiply(scalar)`: Scalar multiplication
-- `magnitude()`: Calculate magnitude
-- `normalize()`: Return unit vector
-- `dot_product(v)`: Dot product with another vector
-
-#### EnergyValues
-Energy calculations at a point in time.
-
-**Attributes**:
-- `kinetic`: float - kinetic energy
-- `potential`: float - potential energy
-- `total`: float - total mechanical energy
-
-#### Trajectory
-Records the complete path of the apple.
-
-**Attributes**:
-- `points`: List[Vector2D] - position history
-- `times`: List[float] - time stamps
-- `velocities`: List[Vector2D] - velocity history
-- `accelerations`: List[Vector2D] - acceleration history
-- `energies`: List[EnergyValues] - energy history
-
-**Methods**:
-- `add_point(position, time, velocity, acceleration, energy)`: Record data point
-- `get_time_of_flight()`: Calculate total fall time
-- `get_max_height()`: Find maximum height reached
-- `get_impact_velocity()`: Get velocity at ground impact
-
-## Troubleshooting
-
-### Common Issues and Solutions
-
-1. **Simulation Runs Too Fast/Slow**
-   - *Cause*: Time step or simulation speed not properly configured
-   - *Solution*: Adjust time step in configuration (0.001-0.1s recommended)
-   - *Solution*: Modify simulation speed multiplier (0.1-10.0)
-
-2. **Inaccurate Results**
-   - *Cause*: Large time step causing discretization errors
-   - *Solution*: Reduce time step (try 0.01s or smaller)
-   - *Solution*: Use higher-order integration method (Runge-Kutta)
-
-3. **Energy Not Conserved**
-   - *Cause*: Air resistance enabled or numerical errors
-   - *Solution*: Disable air resistance for basic conservation tests
-   - *Solution*: Reduce time step to minimize numerical errors
-
-4. **Simulation Crashes**
-   - *Cause*: Invalid parameter values
-   - *Solution*: Check parameter ranges in configuration
-   - *Solution*: Validate inputs before simulation start
-
-5. **Visualization Issues**
-   - *Cause*: Rendering problems with large time steps
-   - *Solution*: Reduce time step for smoother animation
-   - *Solution*: Check graphics drivers and dependencies
-
-### Debugging Tools
-
-1. **Verbose Mode**
-   ```python
-   simulation = FreefallSimulation(config, verbose=True)
-   ```
-   - Prints detailed simulation information
-   - Shows parameter values at each step
-   - Displays energy calculations
-
-2. **Data Export**
-   - Export complete trajectory data
-   - Analyze in external tools (Excel, Python, MATLAB)
-   - Plot graphs for visual debugging
-
-3. **Unit Tests**
-   ```bash
-   python -m unittest tests/test_physics.py
-   python -m unittest tests/test_simulation.py
-   ```
-   - Run physics engine tests
-   - Verify integration methods
-   - Check energy conservation
-
-4. **Visual Debugging**
-   - Enable trajectory visualization
-   - Show velocity and acceleration vectors
-   - Display energy graphs in real-time
-
-## Contributing
-
-### Development Guidelines
-
-1. **Code Style**
-   - Follow PEP 8 guidelines
-   - Use descriptive variable names
-   - Include docstrings for all public methods
-   - Write type hints for better code documentation
-
-2. **Testing**
-   - Write unit tests for new features
-   - Ensure backward compatibility
-   - Test edge cases and boundary conditions
-   - Verify physics accuracy
-
-3. **Documentation**
-   - Update documentation for new features
-   - Add examples for new functionality
-   - Document configuration parameters
-   - Include mathematical derivations when applicable
-
-4. **Performance**
-   - Optimize critical code paths
-   - Profile before optimizing
-   - Consider numerical stability
-   - Document performance characteristics
-
-### Contribution Workflow
-
-1. **Fork the Repository**
-   ```bash
-   git clone https://github.com/yourusername/freefall-simulation.git
-   cd freefall-simulation
-   ```
-
-2. **Create Feature Branch**
-   ```bash
-   git checkout -b feature/your-feature-name
-   ```
-
-3. **Implement Changes**
-   - Add new functionality
-   - Write corresponding tests
-   - Update documentation
-
-4. **Run Tests**
-   ```bash
-   python -m unittest discover
-   ```
-
-5. **Submit Pull Request**
-   - Push changes to your fork
-   - Create pull request to main repository
-   - Describe changes and their purpose
-
-## License
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
-
-## Acknowledgments
-- Isaac Newton for foundational physics principles
-- Educational institutions using this simulation
-- Contributors who have improved the codebase
-- Open source community for valuable tools and libraries

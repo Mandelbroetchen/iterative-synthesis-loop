@@ -33,9 +33,9 @@ def main():
     prompt_md_path = in_path / ".template-prompt.md"
 
     api_config = load_config(api_config_path)
-    loop_config = load_config(loop_config_path)
+    #oop_config = load_config(loop_config_path)
 
-    out_path = Path(loop_config.get("out_path", "."))  # fallback to current dir
+    #out_path = Path(loop_config.get("out_path", "."))  # fallback to current dir
 
     # Setup logging
     logging.basicConfig(
@@ -44,7 +44,7 @@ def main():
         format='---\n ```%(asctime)s``` \n %(message)s \n',
         level=logging.INFO
     )
-    print(api_config)
+
     api = API(api_config)
 
     prompt = load_md(in_path, ".template-prompt.md")

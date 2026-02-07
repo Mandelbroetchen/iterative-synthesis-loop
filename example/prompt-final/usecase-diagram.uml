@@ -1,109 +1,20 @@
-@startuml FreefallUseCaseDiagram
+@startuml usecase-diagram
 
 left to right direction
 
 actor User
-actor "Physics Researcher" as Researcher
-actor "Educator" as Educator
-actor "Student" as Student
-actor "External System" as External
 
-rectangle "Freefall Simulation System" {
-  usecase "Configure Simulation" as UC1
-  usecase "Run Simulation" as UC2
-  usecase "Visualize Results" as UC3
-  usecase "Export Data" as UC4
-  usecase "Analyze Results" as UC5
-  usecase "Calculate Trajectory" as UC6
-  usecase "Update Physics" as UC7
-  usecase "Manage Energy Calculations" as UC8
-  usecase "Configure Air Resistance" as UC9
-  usecase "Set Initial Conditions" as UC10
-  usecase "Handle Collisions" as UC11
-  usecase "Validate Physics" as UC12
-  usecase "Compare Integration Methods" as UC13
-  usecase "Adjust Simulation Speed" as UC14
-  usecase "Configure Visualization" as UC15
-  usecase "Run Educational Scenario" as UC16
-  usecase "Export Simulation State" as UC17
-  usecase "Import Configuration" as UC18
+rectangle FreefallSimulation {
+  usecase (Input Parameters) as UC1
+  usecase (Run Simulation) as UC2
+  usecase (View Results) as UC3
 }
 
 User --> UC1
 User --> UC2
 User --> UC3
-User --> UC4
-User --> UC14
-User --> UC15
-Researcher --> UC5
-Researcher --> UC12
-Researcher --> UC13
-Educator --> UC3
-Educator --> UC5
-Educator --> UC16
-Student --> UC2
-Student --> UC3
-Student --> UC16
-External --> UC4
-External --> UC17
-External --> UC18
 
-UC1 .> UC10 : includes
-UC1 .> UC9 : includes
-UC1 .> UC14 : includes
-UC1 .> UC15 : includes
-UC2 .> UC6 : includes
-UC6 .> UC7 : includes
-UC6 .> UC8 : includes
-UC6 .> UC11 : includes
+UC1 .> UC2 : includes
 UC2 .> UC3 : includes
-UC2 .> UC4 : extends
-UC5 .> UC3 : includes
-UC5 .> UC4 : includes
-UC13 .> UC2 : includes
-UC16 .> UC1 : includes
-UC16 .> UC2 : includes
-UC16 .> UC3 : includes
-
-note top of UC1
-  Configuration includes:
-  - Initial height
-  - Initial velocity
-  - Gravity value
-  - Time step
-  - Air resistance settings
-  - Apple properties
-  - Integration method
-  - Simulation speed
-  - Visualization options
-end note
-
-note right of UC8
-  Energy calculations include:
-  - Potential energy (mgh)
-  - Kinetic energy (½mv²)
-  - Total mechanical energy
-  - Energy conservation verification
-  - Energy vs time graphs
-end note
-
-note left of UC13
-  Integration method comparison:
-  - Euler method
-  - Verlet integration
-  - Runge-Kutta method
-  - Accuracy analysis
-  - Performance benchmarking
-  - Error quantification
-end note
-
-note bottom of UC16
-  Educational scenarios:
-  - Basic freefall demonstration
-  - Energy conservation lesson
-  - Air resistance effects
-  - Gravity variation experiments
-  - Numerical methods comparison
-end note
 
 @enduml
