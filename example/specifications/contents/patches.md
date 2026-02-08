@@ -1,0 +1,1 @@
+also generate example config files

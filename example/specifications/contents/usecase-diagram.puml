@@ -1,0 +1,22 @@
+@startuml usecase-diagram
+
+left to right direction
+
+actor User as user
+
+rectangle "Blackhole Simulation System" {
+    usecase "Provide Configuration" as UC1
+    usecase "Provide Celestial Objects" as UC2
+    usecase "Run Simulation" as UC3
+    usecase "View Results" as UC4
+}
+
+user --> UC1
+user --> UC2
+user --> UC3
+user --> UC4
+
+UC1 ..> UC3 : includes
+UC2 ..> UC3 : includes
+
+@enduml

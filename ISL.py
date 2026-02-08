@@ -28,20 +28,7 @@ def main():
     in_path = Path(args.in_path)
 
     api_config_path = Path(args.api_config) if args.api_config else in_path / ".api.json"
-
-
     api_config = load_config(api_config_path)
-    #oop_config = load_config(loop_config_path)
-
-    #out_path = Path(loop_config.get("out_path", "."))  # fallback to current dir
-
-    # Setup logging
-    logging.basicConfig(
-        filename='.log.md',
-        filemode='w',
-        format='---\n ```%(asctime)s``` \n %(message)s \n',
-        level=logging.INFO
-    )
 
     api = API(api_config)
 

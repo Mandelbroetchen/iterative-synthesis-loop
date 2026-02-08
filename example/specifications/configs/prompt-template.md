@@ -13,7 +13,7 @@ You are a **code generation engine** responsible for implementing software based
 Everything in `prompt-final/` serves as your design input.
 
 ### 1.1 System Documentation
-**File**: `prompt-final/document.md`
+**File**: `prompt-final/documentation.md`
 
 This document provides comprehensive system design including:
 - Functional and non-functional requirements
@@ -23,7 +23,7 @@ This document provides comprehensive system design including:
 - Technical constraints and implementation notes
 
 
-<insert src="./prompt-final/document.md"></insert>
+<insert src="./prompt-final/documentation.md"></insert>
 
 
 ### 1.2 Use Case Diagram
@@ -52,12 +52,10 @@ Entity definitions, attributes, methods, and relationships (UML Class Diagram).
 
 <insert src="./prompt-final/class-diagram.uml"></insert>
 
+### 1.5 Project Patches
+**File**: `prompt-final/patches.md`
 
-**Mode Definitions**:
-- `generation`: Create new code file entirely from scratch
-- `completion`: Extend existing code file with new functionality while preserving current code
-- `correction`: Fix bugs, improve quality, or refactor while maintaining intended behavior
-
+<insert src="./prompt-final/patches.md"></insert>
 
 ---
 
@@ -90,7 +88,7 @@ These files currently exist in `code-raw/` and represent the current implementat
 - [ ] Package structure matches package diagram
 - [ ] All dependencies are clearly imported
 - [ ] Generated code is syntactically correct
-- [ ] Code aligns with design specification in document.md
+- [ ] Code aligns with design specification in documentation.md
 
 ---
 
@@ -100,6 +98,7 @@ These files currently exist in `code-raw/` and represent the current implementat
 
 Requirements:
 - Pure Python code only (no explanations, comments, or additional text)
+- The code should be run from the folder `raw-code`
 - Complete, production-ready code for each file
 - UTF-8 encoding
 - Creates directories if needed (`code-raw/` subdirectories)
@@ -108,10 +107,12 @@ Requirements:
 **Template Structure**:
 
 ```python
+# This is the first line of .overwrite.py
 from pathlib import Path
 
 files = {
-    "code-raw/__init__.py": """[Complete, improved Python code for __init__.py]""",
+    "code-raw/.patchnotes.md": """[Complete patchnotes]""",
+    "code-raw/__init__.py": """[Complete Python code]""",
     "code-raw/module1.py": """[Complete Python code]""",
     "code-raw/module2.py": """[Complete Python code]""",
     "code-raw/utils.py": """[Complete Python code]"""
@@ -122,7 +123,7 @@ for path, content in files.items():
     Path(path).write_text(content, encoding="utf-8")
 
 print("✓ All code files generated successfully")
+# This is the last line of .overwrite.py
 ```
 
-Do not include any additional output or explanation beyond the Python code. Start with a single line ` ```python ` and end with a single line ` ``` `. Also, use `/code-raw` as the root folder of the project. 
-
+<insert src="./global-prompt.md"></insert>

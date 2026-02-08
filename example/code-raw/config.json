@@ -1,8 +1,0 @@
-{
-    "gravity": 9.81,
-    "time_step": 0.01,
-    "output_precision": 4,
-    "air_density": 1.225,
-    "default_drag_coefficient": 0.47,
-    "default_cross_sectional_area": 0.01
-}
