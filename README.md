@@ -1,10 +1,11 @@
-### Usecase
+### Setup
 ```
-git clone https://github.com/Mandelbroetchen/iterative-synthesis-loop
-cd ./iterative-synthesis-loop
-echo MISTRAL_API_KEY=Your_MistralAI_API_key > .env
-cd ./example
-echo You_prompt > ./prompt-raw/description.md
-python ../isl.py ./prompt-raw
+# Clone project
+git clone 
+
+# Copy template and ISL
+cp iterative-synthesis-loop/project-templates/code-project YOUR_PROJECT_NAME
+cp iterative-synthesis-loop/ISL YOUR_PROJECT_NAME/ISL
+cd YOUR_PROJECT_NAME
 ```
 

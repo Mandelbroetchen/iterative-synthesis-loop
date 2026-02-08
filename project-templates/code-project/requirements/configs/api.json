@@ -6,7 +6,8 @@
   },
   "payload": {
     "model": "mistral-large-latest",
-    "max_tokens": 10000
+    "max_tokens": 10000,
+    "temperature": 0
   },
   "timeout": 300,
   "api_key_env": "MISTRAL_API_KEY",
